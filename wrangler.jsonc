@@ -1,20 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
   "name": "image2threejs",
   "compatibility_date": "2026-07-27",
-  "compatibility_flags": [
-    "nodejs_compat",
-    "global_fetch_strictly_public"
-  ],
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "vinext/server/fetch-handler",
+  "preview_urls": true,
   "assets": {
-    "directory": ".open-next/assets",
+    "directory": "dist/client",
+    "not_found_handling": "none",
     "binding": "ASSETS"
-  },
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "image2threejs"
-    }
-  ]
+  }
 }
