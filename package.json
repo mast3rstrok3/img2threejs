@@ -9,6 +9,9 @@
     "build": "vinext build",
     "build:worker": "vinext build",
     "preview": "vinext start",
+    "capture": "node scripts/capture.mjs",
+    "capture-views:pull": "node scripts/pull-capture-views.mjs",
+    "deploy": "vinext-cloudflare deploy",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -25,6 +28,7 @@
     "@vinext/cloudflare": "1.0.0-beta.4",
     "@vitejs/plugin-react": "6.0.4",
     "@vitejs/plugin-rsc": "0.5.30",
+    "playwright-core": "^1.62.0",
     "react-server-dom-webpack": "19.2.8",
     "typescript": "5.9.3",
     "vinext": "1.0.0-beta.4",

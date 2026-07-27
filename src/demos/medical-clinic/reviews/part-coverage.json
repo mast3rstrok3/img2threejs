@@ -1,0 +1,190 @@
+{
+  "model": "medical-clinic",
+  "specifiedComponents": 30,
+  "builtParts": 20,
+  "errors": 0,
+  "warnings": 0,
+  "result": "pass",
+  "findings": [
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "outer-floor-slabs",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "front-curtain-wall",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "left-curtain-wall",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "courtyard-walls",
+      "detail": "no mesh of its own \u2014 folded into 'upper-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "facade-cross-pier",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "roof-walkway",
+      "detail": "no mesh of its own \u2014 folded into 'roof-assembly', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "roof-grass-band",
+      "detail": "no mesh of its own \u2014 folded into 'roof-assembly', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "outer-parapet",
+      "detail": "no mesh of its own \u2014 folded into 'roof-assembly', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "courtyard-parapet",
+      "detail": "no mesh of its own \u2014 folded into 'roof-assembly', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "courtyard-lawn",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "front-steps",
+      "detail": "no mesh of its own \u2014 folded into 'site-plinth', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "front-lawn-island",
+      "detail": "no mesh of its own \u2014 folded into 'landscape-assembly', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "right-lawn-ribbon",
+      "detail": "no mesh of its own \u2014 folded into 'landscape-assembly', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "reception",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "seating-cluster",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "warm-light-rig",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "facade-mullions",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "medical-crosses",
+      "detail": "no mesh of its own \u2014 folded into 'roof-assembly', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "door-hardware",
+      "detail": "no mesh of its own \u2014 folded into 'entrance-doors', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "component-folded",
+      "severity": "info",
+      "subject": "pendant-lights",
+      "detail": "no mesh of its own \u2014 folded into 'ground-storey', which is built. Correct for relief; a real gap only if this needed to be separable."
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Courtyard front glazing",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Courtyard left glazing",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Courtyard rear glazing",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Courtyard right glazing",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Ground front curtain wall",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Ground left curtain wall",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Ground rear curtain wall",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Ground right curtain wall",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Upper rear curtain wall",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    },
+    {
+      "check": "part-not-specified",
+      "severity": "info",
+      "subject": "Upper right curtain wall",
+      "detail": "built part has no matching component in the spec (fine for detail groups; a sign of spec drift for anything larger)"
+    }
+  ]
+}

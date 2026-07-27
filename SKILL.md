@@ -156,7 +156,12 @@ Full flags: `grimoire/scripts.md`. Never let a script *score* visuals — that i
    `forge/stage3_build/orchestrate_passes.py check object-sculpt-spec.json --pass-id <pass>`
    `forge/stage3_build/generate_threejs_factory.py object-sculpt-spec.json --out src/createObjectModel.ts`
    (generator is pass-gated: a future `--pass-id` fails until prior passes are reviewed `continue`).
-7. Render the current pass in a browser/preview, capture a screenshot at a review viewpoint.
+7. Render the current pass and capture a screenshot at a review viewpoint. In this project that is
+   `npm run capture -- --model <demo-id> --label <label>`, which drives the gallery headlessly and
+   frames the shot from the demo's saved review angle (`public/capture-views/<demo-id>.json`,
+   authored in the viewer against the reference). A missing saved angle falls back to bbox framing
+   and is recorded as `viewSource: fallback` — report that, it is not comparable across runs.
+   Elsewhere, use the agent's browser/preview. Details: `grimoire/feedback/render_capture.md`.
 8. Package one side-by-side sheet, then inspect it with agent vision:
    `forge/stage4_review/make_comparison_sheet.py --reference <img> --render <shot> --out cmp.png --json`.
 9. Record the review (overall + per-layer + per-feature scores + decision):
@@ -167,6 +172,15 @@ Full flags: `grimoire/scripts.md`. Never let a script *score* visuals — that i
    `continue` even when the global score passes. See `docs/cs2/review-gates.md`.
 10. Sync pipeline state after manual review edits:
     `forge/stage3_build/orchestrate_passes.py sync object-sculpt-spec.json --in-place`.
+
+## Refining an existing model
+
+The Loop above builds a model. To drive one that already exists closer to its reference photo,
+run the bounded capture → gap-analysis → fix → verify iteration in
+`grimoire/feedback/refine_loop.md` (`/refine` under Claude Code, `AGENTS.md` under Codex). It
+takes a loop budget and a focus (`shape` | `part` | `texture` | `detail` | `none`), keeps each
+iteration to one measurable change, logs every step to `workbench/<model>/`, and stops early on a
+repeated defect, oscillation, or plateau rather than spending the whole budget.
 
 ## CS2 image-matched rule
 

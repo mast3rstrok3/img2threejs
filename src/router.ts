@@ -1,8 +1,14 @@
 export type Route = { name: 'home' } | { name: 'demo'; id: string };
 
-/** Parses `location.hash` into a Route. Defaults to home for anything unrecognized. */
+/**
+ * Parses `location.hash` into a Route. Defaults to home for anything unrecognized.
+ *
+ * The query is stripped before the path is split: the headless capture URL carries its flag in
+ * the hash (`#/demo/<id>?capture=1`), and without this the id keeps the `?capture=1` suffix,
+ * matches no demo, and the run silently redirects to the gallery home page instead of failing.
+ */
 export function parseRoute(hash: string): Route {
-  const clean = hash.replace(/^#\/?/, '');
+  const clean = hash.replace(/^#\/?/, '').split('?')[0];
   if (!clean || clean === '') {
     return { name: 'home' };
   }

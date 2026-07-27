@@ -4,7 +4,17 @@ Use this reference when a procedural Three.js reconstruction has a browser-rende
 
 ## Capture Rule
 
-Each visual build pass should produce at least one rendered screenshot from a named review viewpoint. Use your agent's browser/screenshot tool (Claude Code browser MCP, your agent's in-app browser/preview, or the project's own preview) first. Do not install or download Playwright/Chromium just for this skill; use Playwright or another browser automation path only when the user explicitly allows it or the project already depends on it. If the in-app Browser is unavailable, ask for a screenshot path or use browser tooling that is already present in the target project.
+Each visual build pass should produce at least one rendered screenshot from a named review viewpoint.
+
+**In this project, use `npm run capture`.** The gallery ships a headless capture path and depends on `playwright-core` for it:
+
+```bash
+npm run capture -- --model <demo-id> --label loop-01 [--orbit 25,-25]
+```
+
+It drives `#/demo/<id>?capture=1`, waits for the `window.__IMG2THREEJS_READY__` handshake, and writes `render.png`, `parts.json` and `capture.json` into `workbench/<demo-id>/<label>/`. The viewpoint comes from `public/capture-views/<demo-id>.json` — the angle authored in the viewer against the reference photo. When that file is missing the page falls back to bbox auto-framing and records `viewSource: fallback`; such a render is framed by arithmetic rather than aligned to the reference, so it is not comparable across runs and must be reported as such. `playwright-core` downloads no browsers: it uses Playwright's cached Chromium if present, otherwise the system Chrome.
+
+**In another project**, use your agent's browser/screenshot tool (Claude Code browser MCP, your agent's in-app browser/preview, or the project's own preview) first. Do not install or download Playwright/Chromium just for this skill; use Playwright or another browser automation path only when the user explicitly allows it or the project already depends on it. If the in-app Browser is unavailable, ask for a screenshot path or use browser tooling that is already present in the target project.
 
 Create a side-by-side review image after capture:
 

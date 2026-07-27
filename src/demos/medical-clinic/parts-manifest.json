@@ -1,0 +1,28 @@
+{
+  "model": "medical-clinic",
+  "parts": [
+    { "name": "Rounded stone site plinth", "kind": "detail", "module": "site", "triangles": 956 },
+    { "name": "Visible lobby interior", "kind": "detail", "module": "interior", "triangles": 3636 },
+    { "name": "Ground-storey clinic ring shell", "kind": "detail", "module": null, "triangles": 6136 },
+    { "name": "Ground front curtain wall", "kind": "detail", "module": null, "triangles": 288 },
+    { "name": "Ground left curtain wall", "kind": "detail", "module": null, "triangles": 264 },
+    { "name": "Ground rear curtain wall", "kind": "detail", "module": null, "triangles": 288 },
+    { "name": "Ground right curtain wall", "kind": "detail", "module": null, "triangles": 240 },
+    { "name": "Upper-storey clinic ring shell", "kind": "detail", "module": null, "triangles": 3840 },
+    { "name": "Upper front curtain wall", "kind": "detail", "module": null, "triangles": 336 },
+    { "name": "Upper left curtain wall", "kind": "detail", "module": null, "triangles": 264 },
+    { "name": "Upper rear curtain wall", "kind": "detail", "module": null, "triangles": 312 },
+    { "name": "Upper right curtain wall", "kind": "detail", "module": null, "triangles": 264 },
+    { "name": "Courtyard rear glazing", "kind": "detail", "module": null, "triangles": 168 },
+    { "name": "Courtyard front glazing", "kind": "detail", "module": null, "triangles": 168 },
+    { "name": "Courtyard left glazing", "kind": "detail", "module": null, "triangles": 144 },
+    { "name": "Courtyard right glazing", "kind": "detail", "module": null, "triangles": 144 },
+    { "name": "Roof promenade and courtyard", "kind": "detail", "module": "roof", "triangles": 9740 },
+    { "name": "Landscaped grass ribbons", "kind": "detail", "module": "site", "triangles": 7656 },
+    { "name": "Stepped entrance shell and steps", "kind": "detail", "module": null, "triangles": 4956 },
+    { "name": "Entrance double doors", "kind": "detail", "module": null, "triangles": 504 }
+  ],
+  "unnamedMeshes": 0,
+  "integralMeshes": 352,
+  "note": "Captured from window.__IMG2THREEJS_PARTS__ by the repository capture harness after the final assembly correction."
+}

@@ -1047,6 +1047,131 @@ code,
   margin: 0;
 }
 
+/* --- capture-view authoring (dev only) ------------------------------------------------------
+   The reference photo laid over the live canvas, so the review angle can be dialled in by eye
+   instead of guessed. Sits above the canvas but below the panel, and never eats a pointer event
+   — orbiting has to keep working while the overlay is up. */
+
+.ref-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  opacity: 0.45;
+  /* Difference blend: where model and photo agree the pixels cancel to black, which reads as a
+     far sharper alignment signal than a translucent photo lying on top of the render. */
+  mix-blend-mode: difference;
+}
+
+.capture-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.7rem 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: rgba(124, 159, 255, 0.05);
+}
+
+.capture-tools-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.capture-tools-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.capture-tools-status {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.capture-tools-status[data-kind='ok'] { color: #7ddba3; }
+.capture-tools-status[data-kind='warn'] { color: #e7c07b; }
+.capture-tools-status[data-kind='err'] { color: #ff9b9b; }
+
+.capture-tools-hint {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+.capture-frame:not(:empty) {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--accent-strong);
+}
+
+/* The capture frame, made visible while authoring an angle. Letterboxes the live canvas to the
+   reference photo's aspect so the composition you align against is the one that gets rendered —
+   otherwise you align inside a browser-shaped window and capture a differently-shaped frame. */
+.demo-canvas-mount.is-framed,
+.ref-overlay.is-framed {
+  /* Centred via top/left + translate rather than `inset: 0; margin: auto`: with both edges
+     pinned, a percentage height resolves against the parent instead of against the computed
+     width, so the box takes the window's aspect and defeats the whole point. Width is the one
+     definite dimension; aspect-ratio derives the height from it. */
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: min(100%, calc((100dvh - 2rem) * var(--capture-aspect, 1.778)));
+  height: auto;
+  aspect-ratio: var(--capture-aspect, 1.778);
+  /* The canvas still carries its previous size when the class lands, and as in-flow content it
+     would stretch the box past the height aspect-ratio just derived — which then feeds back
+     through viewer.resize() and settles on the wrong aspect. Clip it instead. */
+  min-height: 0;
+  overflow: hidden;
+}
+
+.demo-canvas-mount.is-framed {
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 100vmax rgba(8, 9, 12, 0.72);
+}
+
+.capture-overlay-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.capture-overlay-range {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.capture-tools-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.capture-btn {
+  flex: 1;
+  justify-content: center;
+  font: inherit;
+  font-size: 0.76rem;
+  padding: 0.5rem 0.5rem;
+  cursor: pointer;
+}
+
 .demo-links {
   display: flex;
   flex-direction: column;

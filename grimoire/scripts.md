@@ -1,8 +1,15 @@
 # Scripts Cheatsheet
 
-All scripts are pure Python 3.10+ **standard library** — no pip install, no PIL/numpy, no
-Playwright/Chromium. PNG read/write is done via `struct`/`zlib`. Run from the skill root so
-paths resolve as `forge/<name>.py`. Non-zero exit = a gate failed; read the printed reasons.
+All **`forge/` scripts** are pure Python 3.10+ **standard library** — no pip install, no
+PIL/numpy, no Playwright/Chromium. PNG read/write is done via `struct`/`zlib`. Run from the skill
+root so paths resolve as `forge/<name>.py`. Non-zero exit = a gate failed; read the printed
+reasons. (When a reference cannot be decoded by the minimal PNG reader — a JPEG, or a palettised
+PNG — the loaders shell out to whichever of `sips`/`magick`/`convert`/`ffmpeg` is on PATH. That
+is a normalisation step via `subprocess`, still no Python dependency.)
+
+Browser automation is **not** a forge script. This project's headless capture lives in
+`scripts/capture.mjs` (Node + `playwright-core`, run as `npm run capture`) precisely so the
+Python side stays dependency-free: the forge only ever analyses PNGs somebody else produced.
 
 Division of labor: **scripts enforce structure and package evidence; they never score visuals.**
 The acceptance score always comes from the agent's own vision inspecting the comparison sheet.

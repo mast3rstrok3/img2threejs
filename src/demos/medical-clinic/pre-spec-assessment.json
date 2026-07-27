@@ -1,0 +1,623 @@
+{
+  "targetName": "Rounded Courtyard Medical Clinic",
+  "sourceImage": "attached-reference: single isometric view of a rounded two-storey courtyard medical clinic",
+  "preSpecAssessment": {
+    "objectClass": {
+      "primaryType": "architectural medical-clinic diorama",
+      "primaryDomain": "object",
+      "formLanguage": [
+        "hard-surface",
+        "architectural",
+        "rounded geometric"
+      ],
+      "structureKind": [
+        "compound object",
+        "layered shell",
+        "repeated modules",
+        "courtyard ring"
+      ],
+      "motionPotential": [
+        "static prop",
+        "whole-object transform",
+        "detachable architectural assemblies"
+      ],
+      "materialFamilies": [
+        "painted composite",
+        "glass-like",
+        "metal",
+        "stone",
+        "grass",
+        "warm interior fabric"
+      ],
+      "notes": "Observable: a two-storey rounded rectangular building surrounds an open square courtyard. White fascia bands frame amber curtain walls; grass and pale paving form roof and ground ribbons."
+    },
+    "complexity": {
+      "tier": "complex",
+      "scores": {
+        "silhouetteComplexity": 2,
+        "componentCount": 3,
+        "hierarchyDepth": 3,
+        "repetitionDensity": 3,
+        "materialLayerCount": 3,
+        "localDetailDensity": 2,
+        "occlusionRisk": 2,
+        "actionReadinessNeed": 2
+      },
+      "estimatedCounts": {
+        "macroComponents": 6,
+        "mesoComponents": 18,
+        "microFeatureGroups": 18,
+        "materialLayers": 7,
+        "repetitionSystems": 4
+      },
+      "reasoning": [
+        "The identity depends on nested negative space: outer rounded footprint, roof promenade, and square courtyard opening.",
+        "Curtain-wall bays, mullions, parapet bands, grass borders, steps, furniture, and light fixtures are repeated systems.",
+        "Single-view rear geometry is inferred; visible front, left, roof, and courtyard relationships are high-confidence."
+      ]
+    },
+    "specDepthDecision": {
+      "requiredDepth": "complex",
+      "minimumComponentLevels": [
+        "macro",
+        "meso",
+        "micro"
+      ],
+      "needsRepetitionSystems": true,
+      "needsMaterialLocalOverrides": true,
+      "needsMultipleReviewViews": true,
+      "needsActionReadyHierarchy": true,
+      "rationale": "A shallow box cannot preserve the roof/courtyard negative space or repeated transparent façade system."
+    },
+    "unknownsToResolveBeforeImplementation": [],
+    "detailInventory": {
+      "scanMethod": "grid-3x3",
+      "targetMinDetails": 16,
+      "note": "Manually authored from the visible attached reference after the crop scaffold was generated.",
+      "details": [
+        {
+          "id": "d01",
+          "kind": "bevel",
+          "description": "Rounded white fascia catch-light",
+          "region": {
+            "x": 0,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "outer-parapet-bevel"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d02",
+          "kind": "gloss",
+          "description": "Low-roughness front glazing response",
+          "region": {
+            "x": 0.25,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "material response",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "glass-edge-gloss"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d03",
+          "kind": "linework",
+          "description": "Front curtain-wall vertical mullion rhythm",
+          "region": {
+            "x": 0.5,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "front-mullion-seams"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d04",
+          "kind": "linework",
+          "description": "Left curtain-wall vertical mullion rhythm",
+          "region": {
+            "x": 0.75,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "left-mullion-seams"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d05",
+          "kind": "emissive",
+          "description": "Roof medical cross",
+          "region": {
+            "x": 0,
+            "y": 0.25,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "material response",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "cross-emission"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.95
+        },
+        {
+          "id": "d06",
+          "kind": "emissive",
+          "description": "Façade medical cross",
+          "region": {
+            "x": 0.25,
+            "y": 0.25,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "material response",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "facade-cross-emissive"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.95
+        },
+        {
+          "id": "d07",
+          "kind": "ridge",
+          "description": "Raised outer white parapet",
+          "region": {
+            "x": 0.5,
+            "y": 0.25,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "outer-parapet-bevel"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d08",
+          "kind": "hole",
+          "description": "Square roof courtyard opening",
+          "region": {
+            "x": 0.75,
+            "y": 0.25,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "macro",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "roof-square-opening"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.95
+        },
+        {
+          "id": "d09",
+          "kind": "seam",
+          "description": "Pale square paving joints",
+          "region": {
+            "x": 0,
+            "y": 0.5,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "paving-joint-lines"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d10",
+          "kind": "ridge",
+          "description": "Dense green roof border",
+          "region": {
+            "x": 0.25,
+            "y": 0.5,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "roof-grass-blades"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d11",
+          "kind": "gloss",
+          "description": "Warm courtyard glass highlight",
+          "region": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "material response",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "courtyard-glass-gloss"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d12",
+          "kind": "bevel",
+          "description": "Rounded entrance portal return",
+          "region": {
+            "x": 0.75,
+            "y": 0.5,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "portal-rounded-return"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d13",
+          "kind": "linework",
+          "description": "Double-door centre seam",
+          "region": {
+            "x": 0,
+            "y": 0.75,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "door-center-seam"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d14",
+          "kind": "fastener",
+          "description": "Repeated pendant bulb and stem cluster",
+          "region": {
+            "x": 0.25,
+            "y": 0.75,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "micro",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "pendant-lights"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d15",
+          "kind": "contour",
+          "description": "White curb following landscape islands",
+          "region": {
+            "x": 0.5,
+            "y": 0.75,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "geometry/readability",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "grass-curb-ribbons"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.84
+        },
+        {
+          "id": "d16",
+          "kind": "emissive",
+          "description": "Warm light line under entry steps",
+          "region": {
+            "x": 0.75,
+            "y": 0.75,
+            "width": 0.25,
+            "height": 0.25,
+            "units": "normalized"
+          },
+          "scale": "meso",
+          "affects": "material response",
+          "mapsTo": {
+            "type": "component.localFeatures",
+            "ref": "step-edge-light"
+          },
+          "evidenceRef": "full-object",
+          "confidence": 0.95
+        }
+      ]
+    },
+    "anatomy": {
+      "applies": false,
+      "styleHeads": 0,
+      "proportions": {
+        "headUnit": 0,
+        "torso": 0,
+        "legs": 0,
+        "shoulderWidth": 0,
+        "hipWidth": 0
+      },
+      "pose": {
+        "type": "unassessed",
+        "jointAngles": {}
+      },
+      "faceLandmarks": {
+        "eyeLine": 0,
+        "eyeSpacing": 0,
+        "noseBase": 0,
+        "mouthLine": 0,
+        "hairline": 0
+      },
+      "features": [],
+      "confidence": 0,
+      "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
+    },
+    "sourceImage": "attached-reference: single isometric view of a rounded two-storey courtyard medical clinic"
+  },
+  "qualityContract": {
+    "qualityBar": "complex",
+    "definitionOfDone": [
+      "At the reference isometric view, the model reads immediately as the same rounded two-storey medical clinic: square courtyard void, layered white fascia, green roof ribbons, warm modular glazing, front portal, two crosses, and landscaped stepped plinth.",
+      "At two orbit views, roof and courtyard remain genuinely volumetric and no façade collapses into a projection plane.",
+      "All named architectural assemblies remain independently clickable and separable by explode mode."
+    ],
+    "minimumSpecDepth": {
+      "macroComponents": 6,
+      "mesoComponents": 18,
+      "microFeatureGroups": 16,
+      "materialLayers": 7,
+      "repetitionSystems": 4,
+      "reviewViewpoints": 5
+    },
+    "featureGroups": [
+      {
+        "id": "courtyard-ring",
+        "name": "Courtyard and roof negative-space system",
+        "required": true,
+        "qualityCriteria": [
+          "Square opening remains centered within the rounded roof ring and exposes the lawn below."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "roof becomes a solid slab",
+          "courtyard is painted rather than open"
+        ]
+      },
+      {
+        "id": "curtain-wall-system",
+        "name": "Warm curtain-wall and mullion system",
+        "required": true,
+        "qualityCriteria": [
+          "Front, left, upper, and courtyard glazing use repeated dark mullions and reveal warm interior depth."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "flat amber walls",
+          "missing bay rhythm"
+        ]
+      },
+      {
+        "id": "white-fascia-system",
+        "name": "Rounded white fascia and parapet system",
+        "required": true,
+        "qualityCriteria": [
+          "All major floor and roof edges carry thick rounded white bands with legible bevel highlights."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "sharp box edges",
+          "inconsistent band thickness"
+        ]
+      },
+      {
+        "id": "landscape-ribbons",
+        "name": "Ground and roof grass ribbon system",
+        "required": true,
+        "qualityCriteria": [
+          "Clipped green zones follow white curbs around roof, courtyard, front lawn, and right-side ribbon."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "grass becomes a full rectangular carpet",
+          "curbs do not follow grass silhouette"
+        ]
+      },
+      {
+        "id": "medical-entry",
+        "name": "Medical identity and entry system",
+        "required": true,
+        "qualityCriteria": [
+          "Roof and façade crosses are visible and the rounded glass entry portal aligns with stepped paving."
+        ],
+        "evidenceRefs": [
+          "full-object"
+        ],
+        "failureModes": [
+          "missing cross",
+          "entrance reads as an ordinary window bay"
+        ]
+      }
+    ],
+    "visualDeltaChecks": [
+      "outer rounded-square silhouette and two-storey height ratio",
+      "courtyard aperture size and roof-ring thickness",
+      "front portal position relative to long glass façade",
+      "curtain-wall bay spacing and dark mullion value",
+      "green-to-white-to-grey material zoning on roof and plinth"
+    ],
+    "antiShallowSpecRules": [
+      "Do not fuse the roof slab, courtyard parapet, grass band, and walkway into one opaque mesh.",
+      "Do not represent the curtain-wall bay rhythm with a flat texture alone.",
+      "Do not omit the front and roof medical crosses.",
+      "Do not accept orbit views where the roof or walls collapse to planar cards."
+    ],
+    "mustNotDo": [
+      "Do not fuse the roof slab, courtyard parapet, grass band, and walkway into one opaque mesh.",
+      "Do not represent the curtain-wall bay rhythm with a flat texture alone.",
+      "Do not omit the front and roof medical crosses.",
+      "Do not accept orbit views where the roof or walls collapse to planar cards."
+    ]
+  },
+  "authoringInstruction": "Fill observed object class, complexity reasoning, featureGroups, visualDeltaChecks, and unknowns before generating or implementing ObjectSculptSpec.",
+  "localSpecSearch": {
+    "collection": "core_3d",
+    "query": "Rounded Courtyard Medical Clinic architectural diorama rounded curtain wall courtyard green roof glass PBR glass curtain wall warm interior emissive landscaped roof",
+    "index": {
+      "status": "hit",
+      "reason": "current",
+      "fingerprint": "6857e5ab528b42ac12f4f411f862610a0bffce8e47aee3610a7603c318072fe8"
+    },
+    "matches": [
+      {
+        "record_id": "core.shader-mapping-capsulegeometry-rounded-edge-components",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[6]",
+        "score": 5.386043518442,
+        "snippets": [
+          "Maps to components with hemispherical rounded ends. Ánh xạ tới các bộ phận có đầu bo tròn dạng bán cầu. Recognition cues: Rod-like part with distinctly rounded (not flat-cut) ends, e.g. a knife spine or a safety lever Dấu hiệu nhận diện: Bộ phận ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[6]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.pbr-hand-painted-vs-pbr-texture",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.material_pbr[12]",
+        "score": 4.661903223664,
+        "snippets": [
+          "... baked directly into color (static, stylized) from textures that respond dynamically to scene lighting via separate PBR channels. Phân biệt kết cấu có ánh sáng được nướng trực tiếp vào màu (tĩnh, cách điệu) với kết cấu phản hồi động ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.material_pbr[12]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      },
+      {
+        "record_id": "core.shader-mapping-meshphysicalmaterial-core-pbr-fields",
+        "file_path": "docs/raw/img2threejs-skill-dataset.json",
+        "heading": null,
+        "key_path": "categories.rendering_shader_mapping[0]",
+        "score": 4.632717063119,
+        "snippets": [
+          "The baseline Three.js material exposing direct scalar/map fields for the standard PBR channel set. Vật liệu Three.js cơ bản cung cấp trực tiếp các trường vô hướng/bản đồ cho bộ kênh PBR tiêu chuẩn. Recognition cues: Use whenever a static ..."
+        ],
+        "source_refs": [
+          {
+            "path": "docs/raw/img2threejs-skill-dataset.json",
+            "heading": null,
+            "key_path": "categories.rendering_shader_mapping[0]"
+          }
+        ],
+        "evidence_refs": [
+          {
+            "kind": "source",
+            "ref": "docs/raw/img2threejs-skill-dataset.json",
+            "note": "img2threejs NotebookLM research distillation"
+          }
+        ]
+      }
+    ]
+  }
+}

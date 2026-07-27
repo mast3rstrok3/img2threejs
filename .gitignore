@@ -34,9 +34,19 @@ runtime/**/.vite/
 # so `assets/` + `!assets/logo.svg` would silently not work.
 assets/*
 !assets/logo.svg
+# Refine-loop scratch: renders, comparison sheets, gap analyses and plans are per-iteration
+# working evidence. The committed artifact of a loop is the code change it produced.
+# Same trailing-`*` reason as assets/ above — git cannot re-include a file under an excluded dir.
+workbench/*
+!workbench/README.md
 openspec/
 runtime/
 node_modules/
+# vinext dev-server state (holds the running dev server's lock/pid)
+.vinext/
+# Per-machine deployment values (port, Cloudflare Access team domain + AUD, hostname).
+# Not secrets, but this repo is a public fork and they are one machine's infrastructure.
+deploy.local.cjs
 .next/
 .open-next/
 .wrangler/

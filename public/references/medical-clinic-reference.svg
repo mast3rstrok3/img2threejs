@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-labelledby="title desc">
+  <title id="title">Rounded courtyard medical clinic reference placeholder</title>
+  <desc id="desc">The original bitmap reference was supplied in the conversation and was not exposed as a repository file. This schematic keeps the gallery route usable without pretending to be the source image.</desc>
+  <defs>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6d89b"/>
+      <stop offset="1" stop-color="#b67d35"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="15" flood-color="#7b766d" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="800" height="800" fill="#f6f4f1"/>
+  <g filter="url(#shadow)" transform="translate(400 400)">
+    <path d="M-315 75 40-65 310 80 0 265z" fill="#dbd9d4" stroke="#c6c3bd" stroke-width="10"/>
+    <path d="M-275 72 20-44 270 88-5 232z" fill="#5d8218" stroke="#eeeae4" stroke-width="22"/>
+    <path d="M-245 34 4-65 225 50-10 174z" fill="url(#glass)" stroke="#f4f2ee" stroke-width="26"/>
+    <path d="M-238-40 14-140 232-25-6 99z" fill="url(#glass)" stroke="#f4f2ee" stroke-width="28"/>
+    <path d="M-252-104 18-210 263-80 3 55z" fill="#5b8214" stroke="#f5f3ef" stroke-width="24"/>
+    <path d="M-189-99 16-180 196-85 0 16z" fill="#d8d7d2" stroke="#f5f3ef" stroke-width="18"/>
+    <path d="M-80-107 25-149 112-103 14-52z" fill="#567c11" stroke="#f5f3ef" stroke-width="16"/>
+    <g stroke="#3e3528" stroke-width="5" opacity=".72">
+      <path d="M-190-19 34-108M-151 1 70-88M-107 24 111-66M-64 47 153-44"/>
+      <path d="M-160-71 42-151M-116-48 84-129M-72-25 128-107M-28-3 171-84"/>
+    </g>
+    <path d="M-25-125h18v-18h18v18h18v18H11v18H-7v-18h-18z" fill="#fff9ec" stroke="#ffe0a5" stroke-width="4"/>
+    <path d="M180 38h17V21h17v17h17v17h-17v17h-17V55h-17z" fill="#fff9ec" stroke="#ffe0a5" stroke-width="4"/>
+  </g>
+  <text x="400" y="742" text-anchor="middle" fill="#7c7871" font-family="system-ui,sans-serif" font-size="18">
+    Source bitmap attached in conversation · repository schematic
+  </text>
+</svg>

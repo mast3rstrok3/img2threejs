@@ -43,6 +43,11 @@ import {
   createGlockGhostProtocolLookDevLights,
   makeGhostProtocolBackground,
 } from './glock-ghost-protocol/createGlockGhostProtocolModel';
+import {
+  createMedicalClinicModel,
+  createMedicalClinicLookDevLights,
+  makeMedicalClinicBackground,
+} from './medical-clinic/createMedicalClinicModel';
 
 export interface DemoEntry {
   /** route id, e.g. 'crown-chest' */
@@ -90,6 +95,43 @@ const BASE = '/';
 const REPO = 'https://github.com/hoainho/img2threejs-showcase/blob/main';
 
 export const demos: DemoEntry[] = [
+  {
+    id: 'medical-clinic',
+    title: 'Rounded Courtyard Medical Clinic',
+    subjectClass: 'object',
+    blurb:
+      'A stylized real-time architectural diorama reconstructed procedurally from one isometric ' +
+      'reference. Nested extruded rings preserve the rounded two-storey silhouette and the real ' +
+      'open courtyard; separate warm curtain-wall bays, dark mullions, white fascia and parapets, ' +
+      'green roof ribbons, stepped entry, illuminated medical crosses, lobby furniture and pendant ' +
+      'lights carry the visible identity. Rear elevations, wall thickness and the room plan are ' +
+      'inferred because the source supplies only one view. Every major assembly is named, clickable ' +
+      'and explodable; no downloaded mesh, texture atlas or photogrammetry is used.',
+    referenceImage: `${BASE}references/medical-clinic-reference.svg`,
+    sourcePath: 'src/demos/medical-clinic/createMedicalClinicModel.ts',
+    sourceUrl: `${REPO}/src/demos/medical-clinic/createMedicalClinicModel.ts`,
+    generatedWith: 'img2threejs v1.4.1',
+    author: 'Codex',
+    authorUrl: 'https://openai.com/codex/',
+    status: 'final',
+    cameraPosition: [-15.5, 13.2, 17.5],
+    cameraTarget: [0, 1.95, 0],
+    cameraFov: 28,
+    accent: '#719414',
+    backgroundGradient: { inner: '#fbfaf8', outer: '#e9e7e3' },
+    exposure: 0.92,
+    environmentIntensity: 0.82,
+    toneMapping: 'aces',
+    installLights: (scene) => {
+      scene.add(createMedicalClinicLookDevLights());
+    },
+    build: (scene) => {
+      scene.background = makeMedicalClinicBackground();
+      const group = createMedicalClinicModel({ shadows: true });
+      scene.add(group);
+      return group;
+    },
+  },
   {
     id: 'glock-ghost-protocol',
     title: 'Glock-18 | Ghost Protocol (Well-Worn)',

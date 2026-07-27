@@ -4,10 +4,44 @@
   "compatibility_date": "2026-07-27",
   "compatibility_flags": ["nodejs_compat"],
   "main": "vinext/server/fetch-handler",
-  "preview_urls": true,
+
+  // Off deliberately. The app is gated by a Cloudflare Access policy on its custom hostname, and
+  // a workers.dev preview URL is a second, UNGATED route to the same Worker — including to the
+  // capture-view write endpoint. One hostname, one front door.
+  "preview_urls": false,
+
+  // The one front door. Uncomment and set the hostname once the Access application exists —
+  // routing traffic here BEFORE the policy is in place publishes an open write endpoint.
+  // The zone must be on the same Cloudflare account. See docs/deploy-cloudflare.md.
+  // "routes": [{ "pattern": "3js.nightingale-ai.com", "custom_domain": true }],
+
   "assets": {
     "directory": "dist/client",
     "not_found_handling": "none",
     "binding": "ASSETS"
+  },
+
+  // Review viewpoints authored in the deployed app. Production has no filesystem, so the pose
+  // that `Set capture view` produces lands here instead of in public/capture-views/. Pull it back
+  // into the repo with `npm run capture-views:pull` — git stays the source of truth, KV is the
+  // handoff. See grimoire/feedback/refine_loop.md.
+  //
+  // SETUP: create the namespace, then paste its id here:
+  //   npx wrangler kv namespace create CAPTURE_VIEWS
+  "kv_namespaces": [
+    {
+      "binding": "CAPTURE_VIEWS",
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+    }
+  ],
+
+  // Defence in depth for the write endpoint: Access already fronts the hostname, but the route
+  // also verifies the Access JWT so it cannot be driven directly. Fill both in after creating the
+  // Access application, or writes stay disabled in production.
+  //   ACCESS_TEAM_DOMAIN  e.g. "nightingale.cloudflareaccess.com"
+  //   ACCESS_AUD          the Application Audience (AUD) tag from the Access app
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": ""
   }
 }

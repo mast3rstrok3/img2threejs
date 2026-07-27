@@ -124,24 +124,44 @@ def write_png_rgb(path: Path, width: int, height: int, pixels: list[tuple[int, i
     )
 
 
+# Converters that can turn a non-PNG reference into a PNG this module can read, as
+# (executable, argv builder). `sips` is macOS-only; without a Linux entry here every reference
+# stored as JPEG (public/references/*.jpg) fails the comparison sheet on a Linux host, which
+# takes out step 2 of the refine loop for those models entirely.
+_PNG_CONVERTERS = (
+    ("sips", lambda exe, src, dst: [exe, "-s", "format", "png", str(src), "--out", str(dst)]),
+    ("magick", lambda exe, src, dst: [exe, str(src), str(dst)]),
+    ("convert", lambda exe, src, dst: [exe, str(src), str(dst)]),
+    ("ffmpeg", lambda exe, src, dst: [exe, "-v", "error", "-y", "-i", str(src), str(dst)]),
+)
+
+
 def load_image(path: Path) -> tuple[int, int, list[tuple[int, int, int, int]]]:
     try:
         return read_png(path)
     except Exception as direct_error:
-        sips = shutil.which("sips")
-        if not sips:
-            raise ValueError(f"could not decode {path.name} as PNG and sips is unavailable: {direct_error}") from direct_error
-        with tempfile.TemporaryDirectory() as tmpdir:
-            converted = Path(tmpdir) / "converted.png"
-            result = subprocess.run(
-                [sips, "-s", "format", "png", str(path), "--out", str(converted)],
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if result.returncode != 0:
-                raise ValueError(result.stderr.strip() or result.stdout.strip() or "sips conversion failed")
-            return read_png(converted)
+        failures: list[str] = []
+        for name, build_argv in _PNG_CONVERTERS:
+            exe = shutil.which(name)
+            if not exe:
+                continue
+            with tempfile.TemporaryDirectory() as tmpdir:
+                converted = Path(tmpdir) / "converted.png"
+                result = subprocess.run(
+                    build_argv(exe, path, converted),
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if result.returncode != 0:
+                    failures.append(f"{name}: {(result.stderr or result.stdout).strip()[:200]}")
+                    continue
+                return read_png(converted)
+        tried = "; ".join(failures) if failures else "no converter found on PATH"
+        raise ValueError(
+            f"could not decode {path.name} as PNG and no converter succeeded "
+            f"(tried {', '.join(n for n, _ in _PNG_CONVERTERS)}): {direct_error} [{tried}]"
+        ) from direct_error
 
 
 def composite_over_checker(pixel: tuple[int, int, int, int], x: int, y: int) -> tuple[int, int, int]:

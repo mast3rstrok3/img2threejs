@@ -1,9 +1,29 @@
 import * as THREE from 'three';
 import { getDemo } from '../demos/registry';
-import { Viewer, type PartInfo } from '../scene';
+import { Viewer, type CaptureView, type PartInfo } from '../scene';
 import { navigate } from '../router';
 
 const GITHUB_URL = 'https://github.com/hoainho/img2threejs';
+
+/**
+ * Reads a demo's authored review viewpoint.
+ *
+ * Goes through the API rather than straight to the static file, because the answer depends on
+ * where it is running: locally the dev middleware reads `public/capture-views/<id>.json`, in
+ * production the Worker reads KV and falls back to that same committed asset. One call either way.
+ * The static path stays as a last resort so a capture still frames correctly if the API is down.
+ */
+async function fetchCaptureView(id: string): Promise<unknown> {
+  for (const url of [`/api/capture-view?model=${encodeURIComponent(id)}`, `/capture-views/${id}.json`]) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (res.ok) return await res.json();
+    } catch {
+      // try the next source
+    }
+  }
+  throw new Error('no capture view available');
+}
 
 /** Viewports where the info panel becomes a collapsible bottom sheet over the model. */
 const COMPACT_QUERY = '(max-width: 860px), (max-height: 520px)';
@@ -33,6 +53,7 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
   mount.innerHTML = `
     <div class="demo-page">
       <div class="demo-canvas-mount" id="demo-canvas-mount"></div>
+      <img class="ref-overlay" id="ref-overlay" src="${demo.referenceImage}" alt="" hidden />
       <section class="demo-panel" id="demo-panel" data-expanded="${expanded}">
         <div class="demo-panel-bar">
           <a class="back-link" href="#/" aria-label="Back to gallery">
@@ -75,6 +96,27 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
               <div class="part-card" id="part-card" hidden></div>
               <div class="parts-scroll"><ul class="parts-list" id="parts-list"></ul></div>
               <p class="parts-prov" id="parts-prov" hidden></p>
+            </section>
+            <section class="capture-tools" id="capture-tools" hidden>
+              <div class="capture-tools-head">
+                <span class="capture-tools-title">Capture view</span>
+                <span class="capture-tools-status" id="capture-status">checking…</span>
+              </div>
+              <p class="capture-tools-hint">
+                Orbit until the model sits on the reference, then save. Every evaluation
+                screenshot is taken from this angle.
+                <span class="capture-frame" id="capture-frame"></span>
+              </p>
+              <label class="capture-overlay-row">
+                <input type="checkbox" id="ref-overlay-toggle" />
+                <span>Overlay reference</span>
+              </label>
+              <input class="capture-overlay-range" id="ref-overlay-opacity" type="range"
+                     min="0" max="100" value="45" aria-label="Reference overlay opacity" />
+              <div class="capture-tools-actions">
+                <button class="btn capture-btn" type="button" id="capture-view-save">Set capture view</button>
+                <button class="btn capture-btn" type="button" id="capture-view-load">Load saved</button>
+              </div>
             </section>
             <div class="demo-links">
               <button class="btn btn-explode" id="demo-explode" type="button" aria-pressed="false" hidden>
@@ -278,6 +320,10 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
     }
   }
 
+  // Deferred until the saved review viewpoint has been fetched and applied — otherwise the
+  // headless screenshot races the fetch and captures the demo's authored camera instead.
+  let readyGate: Promise<unknown> | undefined;
+
   if (capture) {
     // Flat white bg + hide the UI overlay + freeze per-frame animation so the evaluation
     // frame is deterministic and shows only the object (matches the reference plate).
@@ -288,10 +334,18 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
     for (const sel of ['.demo-panel', '.hint']) {
       mount.querySelector<HTMLElement>(sel)?.style.setProperty('display', 'none');
     }
-    // Side-on auto-framing so the evaluation silhouette matches the side-on reference plate.
-    viewer.frameForCapture();
+    readyGate = applyCaptureView(viewer, id);
+    // Exposed for `scripts/capture.mjs --orbit`, which yaws the saved view to produce the extra
+    // angles the "multi-angle or it didn't happen" gate needs. Capture mode only — this is a
+    // headless-evaluation handle, not public API.
+    (window as unknown as Record<string, unknown>).__IMG2THREEJS_VIEWER__ = viewer;
   }
-  viewer.start();
+
+  if (!capture) {
+    installCaptureTools(mount, viewer, id);
+  }
+
+  viewer.start(readyGate);
 
   // --- collapsible details sheet ---------------------------------------------------------
   const panel = mount.querySelector<HTMLElement>('#demo-panel')!;
@@ -330,4 +384,158 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
     canvasMount.removeEventListener('pointerdown', hideHint);
     viewer.dispose();
   };
+}
+
+const isVec3 = (v: unknown): v is [number, number, number] =>
+  Array.isArray(v) && v.length === 3 && v.every((n) => typeof n === 'number' && Number.isFinite(n));
+
+/**
+ * A saved view drives the camera directly, so a malformed file is not a cosmetic problem — one
+ * NaN and the render is a blank frame that still passes the ready handshake and gets scored.
+ */
+function isCaptureView(v: unknown): v is CaptureView {
+  const c = v as CaptureView | null;
+  return !!c && typeof c === 'object'
+    && isVec3(c.position) && isVec3(c.target)
+    && typeof c.fov === 'number' && Number.isFinite(c.fov) && c.fov > 0 && c.fov < 180;
+}
+
+/**
+ * Capture-mode framing: use this demo's authored review viewpoint when one exists, else fall
+ * back to bbox auto-framing.
+ *
+ * Publishes `window.__IMG2THREEJS_VIEW_SOURCE__` either way. That flag is not decoration — the
+ * refine loop records it, because a `fallback` render was framed by arithmetic rather than
+ * aligned to the reference, so it is not comparable across runs and must not be quietly scored
+ * as though it were.
+ */
+async function applyCaptureView(viewer: Viewer, id: string): Promise<void> {
+  const w = window as unknown as { __IMG2THREEJS_VIEW_SOURCE__?: string };
+  try {
+    const view = await fetchCaptureView(id);
+    if (!isCaptureView(view)) throw new Error('malformed capture view');
+    viewer.setView(view);
+    w.__IMG2THREEJS_VIEW_SOURCE__ = 'saved';
+  } catch {
+    viewer.frameForCapture();
+    w.__IMG2THREEJS_VIEW_SOURCE__ = 'fallback';
+  }
+}
+
+/**
+ * Authoring controls for the review viewpoint: overlay the reference photo on the live canvas,
+ * orbit until the silhouettes agree, then persist the pose.
+ *
+ * The overlay is the part that makes this practical — "align the camera with the photo" is
+ * guesswork against a thumbnail and obvious when the photo is sitting on top of the model.
+ *
+ * Available in the deployed app too, not just locally: positioning a model is the one step of the
+ * refine loop that needs a human eye, and it should not require a checkout. Where the pose lands
+ * differs (repo file locally, KV in production) but the control is the same. The deployed app is
+ * gated by Cloudflare Access, and the write endpoint verifies that token itself.
+ */
+function installCaptureTools(mount: HTMLElement, viewer: Viewer, id: string): void {
+  const tools = mount.querySelector<HTMLElement>('#capture-tools');
+  const status = mount.querySelector<HTMLElement>('#capture-status');
+  const overlay = mount.querySelector<HTMLImageElement>('#ref-overlay');
+  const toggle = mount.querySelector<HTMLInputElement>('#ref-overlay-toggle');
+  const opacity = mount.querySelector<HTMLInputElement>('#ref-overlay-opacity');
+  const saveBtn = mount.querySelector<HTMLButtonElement>('#capture-view-save');
+  const loadBtn = mount.querySelector<HTMLButtonElement>('#capture-view-load');
+  if (!tools || !status || !overlay || !toggle || !opacity || !saveBtn || !loadBtn) return;
+
+  tools.hidden = false;
+
+  const setStatus = (text: string, kind: 'ok' | 'warn' | 'err' | 'idle' = 'idle'): void => {
+    status.textContent = text;
+    status.dataset.kind = kind;
+  };
+
+  const applyOpacity = (): void => {
+    overlay.style.opacity = String(Number(opacity.value) / 100);
+  };
+  applyOpacity();
+  opacity.addEventListener('input', applyOpacity);
+
+  // The capture frame takes the REFERENCE's aspect, not a fixed 16:9. Half the reference plates
+  // in this repo are not 16:9, and rendering them into a 16:9 frame changes the composition even
+  // when the camera angle is right — which trips diagnose_render.py's aspect and scale HARD
+  // gates on a framing artifact instead of a real defect. See render_capture.md,
+  // "Reference Framing Match".
+  const captureSize = { width: 1600, height: 900 };
+  const page = mount.querySelector<HTMLElement>('.demo-page');
+  const canvasMount = mount.querySelector<HTMLElement>('#demo-canvas-mount');
+
+  const adoptReferenceAspect = (): void => {
+    const w = overlay.naturalWidth;
+    const h = overlay.naturalHeight;
+    if (!w || !h) return;
+    // Long edge 1600, preserving the reference's aspect. Even numbers keep encoders happy.
+    const scale = 1600 / Math.max(w, h);
+    captureSize.width = Math.max(2, Math.round((w * scale) / 2) * 2);
+    captureSize.height = Math.max(2, Math.round((h * scale) / 2) * 2);
+    page?.style.setProperty('--capture-aspect', String(w / h));
+    const frame = mount.querySelector<HTMLElement>('#capture-frame');
+    if (frame) frame.textContent = `Capture frame ${captureSize.width}x${captureSize.height}, matching the reference.`;
+  };
+  if (overlay.complete) adoptReferenceAspect();
+  else overlay.addEventListener('load', adoptReferenceAspect, { once: true });
+
+  // Raising the overlay does three things, all so that what you align is exactly what gets
+  // captured: flat white stage (difference blending only reads against a light background, and
+  // it is what the capture render uses), and the canvas letterboxed to the reference's aspect so
+  // the live camera has the capture frame's aspect rather than the browser window's.
+  const stageBackground = viewer.scene.background;
+  toggle.addEventListener('change', () => {
+    const on = toggle.checked;
+    overlay.hidden = !on;
+    viewer.scene.background = on ? new THREE.Color(0xffffff) : stageBackground;
+    canvasMount?.classList.toggle('is-framed', on);
+    overlay.classList.toggle('is-framed', on);
+    viewer.resize();
+  });
+
+  const loadView = async (): Promise<void> => {
+    try {
+      const view = await fetchCaptureView(id);
+      if (!isCaptureView(view)) return setStatus('saved view is malformed', 'err');
+      viewer.setView(view);
+      setStatus('saved view applied', 'ok');
+    } catch {
+      setStatus('no saved view yet', 'warn');
+    }
+  };
+
+  const saveView = async (): Promise<void> => {
+    setStatus('saving…');
+    try {
+      const res = await fetch('/api/capture-view', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        // Viewport = the reference's aspect (see adoptReferenceAspect), so the captured frame is
+        // composition-comparable to the photo and not just angle-comparable.
+        body: JSON.stringify({ model: id, ...viewer.getView(), ...captureSize }),
+      });
+      const body = await res.json().catch(() => ({})) as { error?: string; storage?: string };
+      if (!res.ok) return setStatus(body.error ?? `save failed (${res.status})`, 'err');
+      // Where it landed differs by environment, and the difference matters: a pose saved into KV
+      // is not in the repo yet, so say what still has to happen rather than implying it is done.
+      setStatus(
+        body.storage === 'kv'
+          ? 'saved to KV · run `npm run capture-views:pull`'
+          : `saved → public/capture-views/${id}.json`,
+        'ok',
+      );
+    } catch (err) {
+      setStatus(`save failed: ${(err as Error).message}`, 'err');
+    }
+  };
+
+  saveBtn.addEventListener('click', () => void saveView());
+  loadBtn.addEventListener('click', () => void loadView());
+
+  // Report whether an angle is already on file, without moving the camera the user is looking at.
+  void fetchCaptureView(id)
+    .then(() => setStatus('saved view on file', 'ok'))
+    .catch(() => setStatus('not set yet', 'warn'));
 }

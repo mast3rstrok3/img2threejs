@@ -28,6 +28,25 @@ export interface ViewerOptions {
   capture?: boolean;
 }
 
+/**
+ * A saved review viewpoint — the reproducibility contract behind every evaluation render.
+ *
+ * Persisted as `public/capture-views/<demo-id>.json` and re-applied on every capture run, so
+ * loop-03's render is comparable to loop-01's instead of being re-framed by an algorithm each
+ * time. Authored in the viewer (orbit until the silhouette sits on the reference plate), never
+ * by hand. See `grimoire/feedback/refine_loop.md`.
+ */
+export interface CaptureView {
+  position: [number, number, number];
+  target: [number, number, number];
+  fov: number;
+  /** Capture viewport in CSS px at DPR 1 — `grimoire/feedback/render_capture.md` prescribes 1600x900. */
+  width?: number;
+  height?: number;
+  /** Free-text note from whoever authored the angle ("aligned to the broadside plate"). */
+  note?: string;
+}
+
 /** A component a click can resolve to: the unit the inspector selects, names and isolates. */
 export interface PartInfo {
   name: string;
@@ -729,6 +748,15 @@ export class Viewer {
     }
   }
 
+  /**
+   * Re-reads the mount's size and re-fits. Call after changing the mount's dimensions from
+   * outside — the viewer listens for window resizes, not element ones, so letterboxing the
+   * canvas to the reference's aspect would otherwise leave the camera on the old aspect.
+   */
+  resize(): void {
+    this.handleResize();
+  }
+
   private handleResize(): void {
     const width = this.mount.clientWidth || window.innerWidth;
     const height = this.mount.clientHeight || window.innerHeight;
@@ -807,7 +835,15 @@ export class Viewer {
     this.controls.update();
   }
 
-  start(): void {
+  /**
+   * Starts the render loop and arms the headless-capture ready signal.
+   *
+   * `readyGate` defers `__IMG2THREEJS_READY__` until the caller's own async setup has settled.
+   * Capture mode fetches the saved viewpoint over the network, and without this gate the
+   * screenshot races that fetch and lands on the demo's authored camera instead of the review
+   * angle — a silently wrong render, which is the worst kind.
+   */
+  start(readyGate?: Promise<unknown>): void {
     const clock = new THREE.Clock();
     // Collect per-frame updaters exposed by demos via `object.userData.tick`.
     const tickers: Array<(dt: number, elapsed: number) => void> = [];
@@ -849,32 +885,97 @@ export class Viewer {
     const signalReady = (): void => {
       if (signalled) return;
       signalled = true;
-      let framesToWait = 6;
-      const pump = (): void => {
-        if (framesToWait-- > 0) {
-          requestAnimationFrame(pump);
-          return;
-        }
-        w.__IMG2THREEJS_READY__ = true;
-      };
-      pump();
+      // Both gates have to clear before the page claims to be capture-ready: textures loaded
+      // (DefaultLoadingManager) AND the caller's own setup done (the saved-viewpoint fetch).
+      // `catch` and not `then`-only — a failed fetch must still release the page, because the
+      // caller has already fallen back to frameForCapture() and the frame is legitimately ready.
+      const gate = readyGate ? Promise.resolve(readyGate).catch(() => undefined) : Promise.resolve();
+      void gate.then(() => {
+        let framesToWait = 6;
+        const pump = (): void => {
+          if (framesToWait-- > 0) {
+            requestAnimationFrame(pump);
+            return;
+          }
+          w.__IMG2THREEJS_READY__ = true;
+        };
+        pump();
+      });
     };
     THREE.DefaultLoadingManager.onLoad = signalReady;
     // Fallback: if no async loads are pending, onLoad never fires → kick after a short delay.
     setTimeout(signalReady, 600);
   }
 
-  /**
-   * Capture-mode auto-framing: place the camera side-on (looking down +Z at the model's
-   * bounding-box centre) at a distance that fits the object, matching a side-on reference plate.
-   * Call AFTER the demo's build() so the model exists. Near-ortho fov reduces perspective skew.
-   */
-  frameForCapture(fovDeg = 20, margin = 1.12): void {
+  /** Bounding box of every real mesh in the scene — the subject, for framing and clip planes. */
+  private sceneBox(): THREE.Box3 {
     const box = new THREE.Box3();
     this.scene.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh && mesh.geometry) box.expandByObject(mesh);
     });
+    return box;
+  }
+
+  /**
+   * The current camera pose, in the shape `public/capture-views/<id>.json` stores.
+   * This is what the viewer's "Set capture view" control sends to the dev API route.
+   */
+  getView(): CaptureView {
+    const p = this.camera.position;
+    const t = this.controls.target;
+    // Rounded: a review viewpoint authored by dragging does not deserve 17 significant digits,
+    // and a stable file makes a re-save show up as an empty diff rather than float noise.
+    const r = (n: number): number => Math.round(n * 1e4) / 1e4;
+    return {
+      position: [r(p.x), r(p.y), r(p.z)],
+      target: [r(t.x), r(t.y), r(t.z)],
+      fov: r(this.camera.fov),
+    };
+  }
+
+  /**
+   * Applies a saved review viewpoint. This is what capture mode uses INSTEAD of
+   * `frameForCapture()` whenever the demo has an authored angle — the whole point being that the
+   * evaluation render is framed to agree with the reference photo rather than by bbox arithmetic.
+   *
+   * Clip planes are derived from the subject box around the new distance (same reasoning as
+   * `frameForCapture`): a hand-authored pose can sit far closer or further out than the demo's
+   * authored one, and the registry's near/far would clip the model away.
+   */
+  setView(view: CaptureView): void {
+    const [px, py, pz] = view.position;
+    const [tx, ty, tz] = view.target;
+    this.camera.position.set(px, py, pz);
+    this.controls.target.set(tx, ty, tz);
+    if (Number.isFinite(view.fov) && view.fov > 0) this.camera.fov = view.fov;
+
+    const box = this.sceneBox();
+    if (!box.isEmpty()) {
+      const size = box.getSize(new THREE.Vector3());
+      const reach = Math.max(size.x, size.y, size.z);
+      const dist = this.camera.position.distanceTo(this.controls.target);
+      this.camera.near = Math.max(0.01, dist - reach);
+      this.camera.far = dist + reach * 4;
+    }
+    this.camera.updateProjectionMatrix();
+    this.camera.lookAt(this.controls.target);
+    this.controls.update();
+    // Framing is now owned by the saved view — stop applyFit() from dollying it back on resize.
+    this.fitExtent = null;
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  /**
+   * Capture-mode auto-framing: place the camera side-on (looking down +Z at the model's
+   * bounding-box centre) at a distance that fits the object, matching a side-on reference plate.
+   * Call AFTER the demo's build() so the model exists. Near-ortho fov reduces perspective skew.
+   *
+   * This is the FALLBACK. A demo with an authored `public/capture-views/<id>.json` goes through
+   * `setView()` instead — a bbox fit cannot know which side the reference photo was shot from.
+   */
+  frameForCapture(fovDeg = 20, margin = 1.12): void {
+    const box = this.sceneBox();
     if (box.isEmpty()) return;
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());

@@ -186,25 +186,45 @@ def write_png_rgb(path: Path, width: int, height: int, rgb: bytes) -> None:
     )
 
 
+# Converters that can normalise an image this module's minimal reader cannot decode — a JPEG, or
+# a PNG in a colour type other than RGB/RGBA — into one it can, as (executable, argv builder).
+# `sips` is macOS-only. Without a Linux entry, every JPEG reference (public/references/*.jpg) and
+# every palettised PNG fails here, and because diagnose_render.py imports this loader that takes
+# out the Tier 1 gate — step 2 of the refine loop — on any non-macOS host.
+_PNG_CONVERTERS = (
+    ("sips", lambda exe, src, dst: [exe, "-s", "format", "png", str(src), "--out", str(dst)]),
+    ("magick", lambda exe, src, dst: [exe, str(src), str(dst)]),
+    ("convert", lambda exe, src, dst: [exe, str(src), str(dst)]),
+    ("ffmpeg", lambda exe, src, dst: [exe, "-v", "error", "-y", "-i", str(src), str(dst)]),
+)
+
+
 def load_image(path: Path) -> tuple[int, int, list[tuple[int, int, int, int]], list[str]]:
     warnings: list[str] = []
     try:
         return (*read_png(path), warnings)
     except Exception as direct_error:
-        sips = shutil.which("sips")
-        if not sips:
-            raise ValueError(
-                f"could not decode {path.name} as PNG and macOS sips is unavailable: {direct_error}"
-            ) from direct_error
-        with tempfile.TemporaryDirectory() as tmpdir:
-            converted = Path(tmpdir) / "converted.png"
-            command = [sips, "-s", "format", "png", str(path), "--out", str(converted)]
-            result = subprocess.run(command, capture_output=True, text=True, check=False)
-            if result.returncode != 0:
-                raise ValueError(result.stderr.strip() or result.stdout.strip() or "sips conversion failed")
-            warnings.append("source image was converted to PNG with macOS sips before pixel extraction")
-            width, height, pixels = read_png(converted)
-            return width, height, pixels, warnings
+        failures: list[str] = []
+        for name, build_argv in _PNG_CONVERTERS:
+            exe = shutil.which(name)
+            if not exe:
+                continue
+            with tempfile.TemporaryDirectory() as tmpdir:
+                converted = Path(tmpdir) / "converted.png"
+                result = subprocess.run(
+                    build_argv(exe, path, converted), capture_output=True, text=True, check=False
+                )
+                if result.returncode != 0:
+                    failures.append(f"{name}: {(result.stderr or result.stdout).strip()[:200]}")
+                    continue
+                warnings.append(f"source image was converted to PNG with {name} before pixel extraction")
+                width, height, pixels = read_png(converted)
+                return width, height, pixels, warnings
+        tried = "; ".join(failures) if failures else "no converter found on PATH"
+        raise ValueError(
+            f"could not decode {path.name} as PNG and no converter succeeded "
+            f"(tried {', '.join(n for n, _ in _PNG_CONVERTERS)}): {direct_error} [{tried}]"
+        ) from direct_error
 
 
 def sample_corner_background(
