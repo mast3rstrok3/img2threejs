@@ -22,6 +22,7 @@
  */
 
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
@@ -52,6 +53,7 @@ function parseArgs(argv) {
     else if (arg === '--label') args.label = next();
     else if (arg === '--out') args.out = next();
     else if (arg === '--url') args.url = next().replace(/\/$/, '');
+    else if (arg === '--capture-view') args.captureView = next();
     else if (arg === '--timeout') args.timeout = Number(next());
     else if (arg === '--keep-server') args.keepServer = true;
     else if (arg === '--orbit') {
@@ -74,6 +76,8 @@ capture.mjs — headless evaluation render for the img2threejs refine loop
   --out <dir>       write here instead of workbench/<model>/<label>
   --orbit a,b       extra renders yawed by these degrees, for the multi-angle gate
   --url <origin>    dev server origin                            (default: ${DEFAULT_URL})
+  --capture-view <file>
+                      immutable user-authored view for a workflow run
   --timeout <ms>    ready-handshake timeout                      (default: 90000)
   --keep-server     leave an auto-started dev server running
 `.trim();
@@ -259,15 +263,20 @@ async function main() {
   // same dimensions every run. Missing file is not fatal — the page falls back and says so.
   let viewport = { ...DEFAULT_VIEWPORT };
   let savedView = null;
-  const viewFile = join(ROOT, 'public', 'capture-views', `${args.model}.json`);
+  const viewFile = args.captureView
+    ? resolve(args.captureView)
+    : join(ROOT, 'public', 'capture-views', `${args.model}.json`);
+  let captureViewSha256 = null;
   try {
-    savedView = JSON.parse(await readFile(viewFile, 'utf8'));
+    const rawView = await readFile(viewFile);
+    savedView = JSON.parse(rawView.toString('utf8'));
+    captureViewSha256 = createHash('sha256').update(rawView).digest('hex');
     if (Number.isFinite(savedView.width) && Number.isFinite(savedView.height)) {
       viewport = { width: savedView.width, height: savedView.height };
     }
   } catch {
     console.warn(
-      `capture: no saved view at public/capture-views/${args.model}.json — the page will fall back\n` +
+      `capture: no saved view at ${viewFile} — the page will fall back\n` +
       '         to bbox auto-framing. Set an angle in the viewer for a reproducible render.',
     );
   }
@@ -282,6 +291,17 @@ async function main() {
   try {
     const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
     const page = await context.newPage();
+
+    // Workflow jobs lock the user-selected review angle when they start. Intercept the viewer's
+    // normal API lookup so every capture in that complete skill invocation uses the immutable
+    // snapshot, even if the user authors a newer angle in the demo meanwhile.
+    if (args.captureView && savedView) {
+      await page.route('**/api/capture-view?model=*', (route) => route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(savedView),
+      }));
+    }
 
     const pageErrors = [];
     page.on('pageerror', (err) => pageErrors.push(err.message));
@@ -304,7 +324,8 @@ async function main() {
       die(`the page never became capture-ready within ${args.timeout}ms at ${target}${detail}`);
     }
 
-    const viewSource = await page.evaluate(() => window.__IMG2THREEJS_VIEW_SOURCE__ ?? 'unknown');
+    const pageViewSource = await page.evaluate(() => window.__IMG2THREEJS_VIEW_SOURCE__ ?? 'unknown');
+    const viewSource = args.captureView && pageViewSource === 'saved' ? 'run-snapshot' : pageViewSource;
     const parts = await page.evaluate(() => window.__IMG2THREEJS_PARTS__ ?? null);
 
     const renderPath = join(outDir, 'render.png');
@@ -361,6 +382,7 @@ async function main() {
         // 'saved' = framed at the authored angle and comparable across loops; 'fallback' = framed
         // by bbox arithmetic. The loop records this, because the two are not the same evidence.
         viewSource,
+        captureViewSha256,
         view: savedView,
         orbits,
         subjectCoverage: Number(coverage.toFixed(4)),

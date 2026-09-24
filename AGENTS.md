@@ -27,6 +27,9 @@ npm run typecheck   # tsc --noEmit
 npm run build       # production build
 npm run capture -- --model <id> --label <label>   # headless evaluation render
 npm run capture-views:pull -- --url <origin>      # pull angles authored in the deployed app
+npm run workflow -- list                          # inspect skill-invocation jobs
+npm run workflow -- status <job-id>               # inspect one refinement run
+npm run workflow:worker                           # durable local workflow worker
 npm run deploy                                    # Cloudflare Workers (docs/deploy-cloudflare.md)
 python3 -m unittest discover forge/tests          # forge tests
 ```
@@ -53,6 +56,11 @@ demo, toggle **Overlay reference**, orbit until the model sits on the photo, cli
 
 The same control exists in the deployed app, but there the pose goes to Workers KV, not the repo.
 It has no effect on a local loop until `npm run capture-views:pull` brings it in.
+
+The self-hosted demo also exposes **Refinement runs**. One requested loop is one complete
+`SKILL.md` invocation. The worker is only a harness: it locks the user-authored capture angle,
+counts complete invocations, persists status, and launches the next one. It must not replace the
+skill's gap analysis, fix selection, implementation, visual judgment, or self-correction.
 
 ## Rules that hold everywhere in this repo
 

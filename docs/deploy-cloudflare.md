@@ -6,6 +6,11 @@
 > capture views go to KV and have to be pulled back into the repo with
 > `npm run capture-views:pull`. Self-hosted writes them into `public/capture-views/` directly.
 
+Cloudflare Workers cannot execute **Refinement runs**. A complete `SKILL.md` invocation needs a
+writable checkout, Codex, git, npm and browser capture. The workflow API therefore returns an
+explicit unsupported-capability response on Workers; use the self-hosted tunnel deployment for
+the run harness.
+
 The deployed app is the gallery **plus** the capture-view authoring UI, so a model can be
 positioned for its evaluation screenshot without a checkout. That makes it a write endpoint, which
 is why every step below treats the Access policy as part of the deploy rather than a follow-up.

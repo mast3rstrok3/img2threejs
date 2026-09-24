@@ -1,8 +1,8 @@
 {
   "position": [-15.5, 13.2, 17.5],
-  "target": [0, 1.95, 0],
+  "target": [0, 1.45, 0],
   "fov": 28,
   "width": 1254,
   "height": 1254,
-  "note": "Reference-like isometric view: front, left elevation, roof promenade and courtyard remain visible."
+  "note": "Reference-like isometric target: complete far parapet and front plinth stay visible with front/left glazing, roof and courtyard."
 }

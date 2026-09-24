@@ -182,6 +182,15 @@ takes a loop budget and a focus (`shape` | `part` | `texture` | `detail` | `none
 iteration to one measurable change, logs every step to `workbench/<model>/`, and stops early on a
 repeated defect, oscillation, or plateau rather than spending the whole budget.
 
+### Repeated complete invocations
+
+The self-hosted gallery can queue a user-selected number of complete skill invocations. The
+workflow worker is deliberately only a harness: **one loop means one run of this `SKILL.md` all
+the way to its terminal outcome**. The harness locks the review angle, launches the skill, records
+the structured outcome, and repeats. It does not interpret the gap or prescribe the correction;
+the analysis, evidence-backed fix, implementation, gates, vision review, and self-correction all
+remain owned by this skill.
+
 ## CS2 image-matched rule
 
 For a CS2 item, the target is observable agreement between the supplied image and the rendered

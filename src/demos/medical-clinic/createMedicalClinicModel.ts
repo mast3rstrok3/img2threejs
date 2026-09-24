@@ -36,8 +36,8 @@ interface BuildContext {
 
 const WHITE = 0xf2f1ed;
 const WHITE_SHADE = 0xdedfdc;
-const GLASS_AMBER = 0xd7aa58;
-const GLASS_SHADOW = 0x5f5849;
+const GLASS_AMBER = 0xc58d3e;
+const GLASS_SHADOW = 0x4d463a;
 const WARM_INTERIOR = 0xf1c778;
 const GRASS = 0x557f12;
 const GRASS_DARK = 0x345b08;
@@ -83,14 +83,14 @@ function makeGrassTextures(): {
 } {
   const albedo = canvasTexture(512, (ctx, s) => {
     const rand = mulberry32(0x44a551);
-    ctx.fillStyle = '#4f770e';
+    ctx.fillStyle = '#345806';
     ctx.fillRect(0, 0, s, s);
     for (let i = 0; i < 7200; i++) {
       const x = rand() * s;
       const y = rand() * s;
       const len = 2 + rand() * 6;
       const shade = rand();
-      ctx.strokeStyle = shade < 0.38 ? '#345b08' : shade < 0.74 ? '#628c16' : '#789e21';
+      ctx.strokeStyle = shade < 0.38 ? '#203f03' : shade < 0.74 ? '#496f0d' : '#5f8215';
       ctx.globalAlpha = 0.22 + rand() * 0.45;
       ctx.lineWidth = 0.45 + rand() * 0.8;
       ctx.beginPath();
@@ -235,6 +235,28 @@ function roundedRectShape(w: number, d: number, r: number): THREE.Shape {
   return shape;
 }
 
+function frontLawnShape(pad = 0): THREE.Shape {
+  const shape = new THREE.Shape();
+  const minX = -4.38 - pad;
+  const maxX = 2.34 + pad;
+  const innerY = -2.48 + pad;
+  const outerY = -4.3 - pad;
+  const r = 0.58 + pad * 0.45;
+
+  shape.moveTo(minX + r, innerY);
+  shape.lineTo(-0.2, innerY);
+  shape.bezierCurveTo(0.72, innerY, 1.22, -2.76 + pad, 1.58, -3.4 + pad);
+  shape.bezierCurveTo(1.82, -3.82 + pad, 2.02, -3.93 + pad, maxX, -3.93 + pad);
+  shape.lineTo(maxX, outerY + r);
+  shape.quadraticCurveTo(maxX, outerY, maxX - r, outerY);
+  shape.lineTo(minX + r, outerY);
+  shape.quadraticCurveTo(minX, outerY, minX, outerY + r);
+  shape.lineTo(minX, innerY - r);
+  shape.quadraticCurveTo(minX, innerY, minX + r, innerY);
+  shape.closePath();
+  return shape;
+}
+
 function ringShape(
   outerW: number,
   outerD: number,
@@ -354,16 +376,16 @@ function makeMaterials(): BuildContext['mats'] {
     }),
     glass: new THREE.MeshPhysicalMaterial({
       color: GLASS_AMBER,
-      roughness: 0.12,
+      roughness: 0.18,
       metalness: 0.03,
-      transmission: 0.42,
+      transmission: 0.24,
       transparent: true,
-      opacity: 0.36,
+      opacity: 0.48,
       ior: 1.48,
       thickness: 0.08,
-      clearcoat: 0.72,
-      clearcoatRoughness: 0.1,
-      envMapIntensity: 1.05,
+      clearcoat: 0.58,
+      clearcoatRoughness: 0.14,
+      envMapIntensity: 0.78,
       side: THREE.DoubleSide,
       depthWrite: false,
     }),
@@ -622,7 +644,17 @@ function addLandscape(ctx: BuildContext, root: THREE.Group): void {
     landscape.add(island);
   };
 
-  addIsland('Front lawn', 6.25, 2.25, 0.72, -1.25, 3.23);
+  const front = new THREE.Group();
+  front.userData.description = 'Front lawn with a concave entry-paving cut-out';
+  const frontCurb = horizontalExtrude(frontLawnShape(0.13), 0.17, ctx.mats.shell, 0.055);
+  frontCurb.position.y = 0.23;
+  frontCurb.userData.explodeWithParent = true;
+  const frontLawn = horizontalExtrude(frontLawnShape(), 0.1, ctx.mats.grass, 0.03);
+  frontLawn.position.y = 0.36;
+  frontLawn.userData.explodeWithParent = true;
+  front.add(frontCurb, frontLawn);
+  landscape.add(front);
+
   addIsland('Left lawn', 1.25, 5.85, 0.5, -4.25, -0.18);
   addIsland('Right lawn ribbon', 1.85, 6.35, 0.62, 4.12, -0.06);
   addIsland('Rear lawn ribbon', 6.2, 1.25, 0.5, 0.3, -3.62);
@@ -662,26 +694,26 @@ function addEntry(ctx: BuildContext, root: THREE.Group): void {
 
   for (let i = 0; i < 3; i++) {
     const step = horizontalExtrude(
-      roundedRectShape(3.2 - i * 0.28, 1.24 - i * 0.2, 0.34),
+      roundedRectShape(4.8 - i * 0.34, 1.72 - i * 0.24, 0.42),
       0.1,
       i === 0 ? ctx.mats.pavingSide : ctx.mats.paving,
       0.035,
     );
-    step.position.set(1.28, 0.22 + i * 0.09, 3.65 - i * 0.04);
+    step.position.set(0.92, 0.22 + i * 0.09, 3.62 - i * 0.04);
     step.userData.explodeWithParent = true;
     entryShell.add(step);
   }
-  const lightLine = box(ctx, 2.72, 0.035, 0.035, ctx.mats.curbGlow);
-  lightLine.position.set(1.28, 0.42, 4.03);
+  const lightLine = box(ctx, 4.18, 0.035, 0.035, ctx.mats.curbGlow);
+  lightLine.position.set(0.92, 0.42, 4.18);
   lightLine.userData.explodeWithParent = true;
   entryShell.add(lightLine);
 
   // White portal cap and curved-return side blocks.
-  const canopy = horizontalExtrude(roundedRectShape(4.05, 0.9, 0.36), 0.22, ctx.mats.shell, 0.075);
-  canopy.position.set(1.34, 2.19, 3.28);
+  const canopy = horizontalExtrude(roundedRectShape(7.15, 0.9, 0.36), 0.22, ctx.mats.shell, 0.075);
+  canopy.position.set(-0.24, 2.19, 3.28);
   canopy.userData.explodeWithParent = true;
   entryShell.add(canopy);
-  for (const x of [-0.58, 3.23]) {
+  for (const x of [-3.72, 3.23]) {
     const side = box(ctx, 0.3, 1.76, 0.54, ctx.mats.shell);
     side.position.set(x, 1.27, 3.29);
     side.userData.explodeWithParent = true;
@@ -694,7 +726,7 @@ function addEntry(ctx: BuildContext, root: THREE.Group): void {
     'Entrance double doors',
     3.42,
     1.66,
-    5,
+    4,
     new THREE.Vector3(1.18, 1.27, 3.42),
   );
 
@@ -738,29 +770,29 @@ function addRoof(ctx: BuildContext, root: THREE.Group): void {
   );
 
   const slab = horizontalExtrude(ringShape(8.22, 6.66, 0.62, 3.05, 2.38, 0.46, 0.2, -0.1), 0.18, ctx.mats.shell, 0.055);
-  slab.position.set(-0.05, 4.0, -0.18);
+  slab.position.set(-0.05, 2.3, -0.18);
   slab.userData.explodeWithParent = true;
   roof.add(slab);
 
   // Green perimeter band: an outer strip around the pale promenade.
-  const green = horizontalExtrude(ringShape(7.84, 6.28, 0.52, 6.75, 5.2, 0.42), 0.09, ctx.mats.grass, 0.025);
-  green.position.set(-0.05, 4.19, -0.18);
+  const green = horizontalExtrude(ringShape(7.84, 6.28, 0.52, 6.22, 4.66, 0.38), 0.09, ctx.mats.grass, 0.025);
+  green.position.set(-0.05, 2.49, -0.18);
   green.userData.explodeWithParent = true;
   roof.add(green);
 
   // Pale inner promenade ring around the courtyard opening.
   const walk = horizontalExtrude(ringShape(6.72, 5.17, 0.43, 3.16, 2.49, 0.5, 0.2, -0.1), 0.075, ctx.mats.paving, 0.022);
-  walk.position.set(-0.05, 4.185, -0.18);
+  walk.position.set(-0.05, 2.485, -0.18);
   walk.userData.explodeWithParent = true;
   roof.add(walk);
 
   // Outer and courtyard parapet rings.
   const outerParapet = horizontalExtrude(ringShape(8.4, 6.84, 0.68, 8.08, 6.52, 0.58), 0.22, ctx.mats.shell, 0.055);
-  outerParapet.position.set(-0.05, 4.23, -0.18);
+  outerParapet.position.set(-0.05, 2.53, -0.18);
   outerParapet.userData.explodeWithParent = true;
   roof.add(outerParapet);
   const innerParapet = horizontalExtrude(ringShape(3.48, 2.82, 0.56, 3.11, 2.45, 0.44), 0.22, ctx.mats.shell, 0.05);
-  innerParapet.position.set(0.15, 4.23, -0.28);
+  innerParapet.position.set(0.15, 2.53, -0.28);
   innerParapet.userData.explodeWithParent = true;
   roof.add(innerParapet);
 
@@ -774,7 +806,7 @@ function addRoof(ctx: BuildContext, root: THREE.Group): void {
   });
   crossGeo.rotateX(-Math.PI / 2);
   const cross = new THREE.Mesh(crossGeo, ctx.mats.emissive);
-  cross.position.set(-1.65, 4.29, 1.4);
+  cross.position.set(-1.65, 2.59, 1.4);
   cross.rotation.y = -0.08;
   cross.userData.explodeWithParent = true;
   roof.add(cross);
@@ -787,28 +819,20 @@ function addBuilding(ctx: BuildContext, root: THREE.Group): void {
     'Ground-storey clinic ring',
     'Warm glazed perimeter surrounding the lawn courtyard, held between thick rounded white slabs',
   );
-  const upper = part(
+  const courtyardRing = part(
     root,
-    'Upper-storey clinic ring',
-    'Second level of amber curtain walls with the visible square courtyard cut through the centre',
+    'Courtyard curtain-wall ring',
+    'Single-storey amber curtain walls lining the open lawn courtyard',
   );
   const lowerShell = part(
     lower,
     'Ground-storey clinic ring shell',
     'Ground floor slabs, courtyard curb and continuous rounded corner piers',
   );
-  const upperShell = part(
-    upper,
-    'Upper-storey clinic ring shell',
-    'Upper floor and roof-line slabs that keep the second-storey envelope independently selectable',
-  );
-
   // Slabs define the characteristic thick, continuous white horizontal bands.
   for (const [group, y, w, d] of [
     [lowerShell, 0.42, 8.18, 6.62],
     [lowerShell, 2.18, 8.18, 6.62],
-    [upperShell, 2.3, 8.1, 6.55],
-    [upperShell, 3.88, 8.12, 6.57],
   ] as Array<[THREE.Group, number, number, number]>) {
     const slab = horizontalExtrude(ringShape(w, d, 0.58, 3.05, 2.38, 0.44, 0.2, -0.1), 0.18, ctx.mats.shell, 0.06);
     slab.position.set(-0.05, y, -0.18);
@@ -817,23 +841,18 @@ function addBuilding(ctx: BuildContext, root: THREE.Group): void {
   }
 
   const groundY = 1.31;
-  const upperY = 3.08;
+  const courtyardY = 1.31;
   // Front and left are the hero elevations visible in the reference.
-  addCurtainWall(ctx, lower, 'Ground front curtain wall', 6.18, 1.57, 10, new THREE.Vector3(-0.76, groundY, 3.08), 0, 5);
-  addCurtainWall(ctx, lower, 'Ground left curtain wall', 5.45, 1.57, 9, new THREE.Vector3(-4.02, groundY, -0.23), -Math.PI / 2, 4);
+  addCurtainWall(ctx, lower, 'Ground front curtain wall', 6.18, 1.57, 8, new THREE.Vector3(-0.76, groundY, 3.08));
+  addCurtainWall(ctx, lower, 'Ground left curtain wall', 5.45, 1.57, 7, new THREE.Vector3(-4.02, groundY, -0.23), -Math.PI / 2);
   addCurtainWall(ctx, lower, 'Ground rear curtain wall', 6.55, 1.57, 10, new THREE.Vector3(0.18, groundY, -3.42), Math.PI, 5);
   addCurtainWall(ctx, lower, 'Ground right curtain wall', 4.7, 1.57, 8, new THREE.Vector3(4.0, groundY, -0.55), Math.PI / 2, 4);
 
-  addCurtainWall(ctx, upper, 'Upper front curtain wall', 7.45, 1.38, 12, new THREE.Vector3(-0.2, upperY, 3.04), 0, 6);
-  addCurtainWall(ctx, upper, 'Upper left curtain wall', 5.75, 1.38, 9, new THREE.Vector3(-3.98, upperY, -0.23), -Math.PI / 2, 5);
-  addCurtainWall(ctx, upper, 'Upper rear curtain wall', 7.25, 1.38, 11, new THREE.Vector3(0.05, upperY, -3.35), Math.PI, 5);
-  addCurtainWall(ctx, upper, 'Upper right curtain wall', 5.55, 1.38, 9, new THREE.Vector3(3.93, upperY, -0.25), Math.PI / 2, 5);
-
   // Inner courtyard glazing, inset around the open lawn.
-  addCurtainWall(ctx, upper, 'Courtyard rear glazing', 2.94, 1.38, 5, new THREE.Vector3(0.15, upperY, -1.54), 0);
-  addCurtainWall(ctx, upper, 'Courtyard front glazing', 2.94, 1.38, 5, new THREE.Vector3(0.15, upperY, 0.98), Math.PI);
-  addCurtainWall(ctx, upper, 'Courtyard left glazing', 2.08, 1.38, 4, new THREE.Vector3(-1.39, upperY, -0.28), Math.PI / 2);
-  addCurtainWall(ctx, upper, 'Courtyard right glazing', 2.08, 1.38, 4, new THREE.Vector3(1.69, upperY, -0.28), -Math.PI / 2);
+  addCurtainWall(ctx, courtyardRing, 'Courtyard rear glazing', 2.94, 1.57, 5, new THREE.Vector3(0.15, courtyardY, -1.54), 0);
+  addCurtainWall(ctx, courtyardRing, 'Courtyard front glazing', 2.94, 1.57, 5, new THREE.Vector3(0.15, courtyardY, 0.98), Math.PI);
+  addCurtainWall(ctx, courtyardRing, 'Courtyard left glazing', 2.08, 1.57, 4, new THREE.Vector3(-1.39, courtyardY, -0.28), Math.PI / 2);
+  addCurtainWall(ctx, courtyardRing, 'Courtyard right glazing', 2.08, 1.57, 4, new THREE.Vector3(1.69, courtyardY, -0.28), -Math.PI / 2);
 
   // Ground courtyard lawn and white curb.
   const courtyardCurb = horizontalExtrude(roundedRectShape(3.15, 2.48, 0.48), 0.14, ctx.mats.shell, 0.045);
@@ -853,14 +872,14 @@ function addBuilding(ctx: BuildContext, root: THREE.Group): void {
     [3.83, 0, 2.92],
   ];
   for (const [x, , z] of corners) {
-    const column = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.29, 3.5, 24), ctx.mats.shell);
+    const column = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.29, 1.76, 24), ctx.mats.shell);
     column.scale.set(0.78, 1, 1);
-    column.position.set(x, 2.14, z);
+    column.position.set(x, 1.31, z);
     column.userData.explodeWithParent = true;
     lowerShell.add(column);
   }
   setMeshFlags(ctx, lower);
-  setMeshFlags(ctx, upper);
+  setMeshFlags(ctx, courtyardRing);
 }
 
 export function createMedicalClinicModel(options: MedicalClinicOptions = {}): THREE.Group {
@@ -899,8 +918,6 @@ export function createMedicalClinicModel(options: MedicalClinicOptions = {}): TH
     [1.62, 1.45, 1.35, 1.75],
     [-2.45, 1.45, -1.55, 1.65],
     [2.35, 1.5, -1.35, 1.55],
-    [-0.6, 3.25, -1.65, 1.4],
-    [1.55, 3.25, 1.4, 1.25],
   ];
   for (const [x, y, z, intensity] of lightPositions) {
     const light = new THREE.PointLight(0xffc66d, intensity, 4.1, 2.1);
@@ -923,15 +940,15 @@ export function createMedicalClinicModel(options: MedicalClinicOptions = {}): TH
     sockets: {
       entry: new THREE.Vector3(1.1, 0.46, 4.05),
       courtyardCenter: new THREE.Vector3(0.15, 0.52, -0.28),
-      roofCross: new THREE.Vector3(-1.65, 4.31, 1.4),
+      roofCross: new THREE.Vector3(-1.65, 2.61, 1.4),
     },
     colliders: [
       { id: 'site', type: 'box', center: [0, 0.18, 0], size: [10.5, 0.36, 9.25] },
-      { id: 'building-ring', type: 'compound-box-ring', center: [-0.05, 2.25, -0.18], size: [8.2, 3.7, 6.65] },
+      { id: 'building-ring', type: 'compound-box-ring', center: [-0.05, 1.32, -0.18], size: [8.2, 1.9, 6.65] },
     ],
     destructionGroups: {
       site: ['Rounded stone site plinth', 'Landscaped grass ribbons'],
-      envelope: ['Ground-storey clinic ring', 'Upper-storey clinic ring'],
+      envelope: ['Ground-storey clinic ring', 'Courtyard curtain-wall ring'],
       roof: ['Roof promenade and courtyard'],
       entry: ['Stepped entrance portal'],
       interior: ['Visible lobby interior'],
@@ -953,10 +970,10 @@ export function createMedicalClinicLookDevLights(): THREE.Group {
   const lights = new THREE.Group();
   lights.name = 'Medical clinic look-dev lights';
 
-  const hemi = new THREE.HemisphereLight(0xf7f4ee, 0xc9c5b8, 1.25);
+  const hemi = new THREE.HemisphereLight(0xf7f4ee, 0xc9c5b8, 1.05);
   lights.add(hemi);
 
-  const key = new THREE.DirectionalLight(0xfff2dc, 2.65);
+  const key = new THREE.DirectionalLight(0xfff2dc, 2.2);
   key.position.set(-7.5, 11, 8.5);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
@@ -970,11 +987,11 @@ export function createMedicalClinicLookDevLights(): THREE.Group {
   camera.far = 28;
   lights.add(key);
 
-  const fill = new THREE.DirectionalLight(0xd9e6f2, 0.92);
+  const fill = new THREE.DirectionalLight(0xd9e6f2, 0.72);
   fill.position.set(8, 5.5, 2.5);
   lights.add(fill);
 
-  const rim = new THREE.DirectionalLight(0xffe0aa, 1.45);
+  const rim = new THREE.DirectionalLight(0xffe0aa, 1.15);
   rim.position.set(4, 8, -8);
   lights.add(rim);
   return lights;

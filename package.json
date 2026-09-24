@@ -11,6 +11,8 @@
     "preview": "vinext start",
     "capture": "node scripts/capture.mjs",
     "capture-views:pull": "node scripts/pull-capture-views.mjs",
+    "workflow": "python3 -m forge.workflows.cli",
+    "workflow:worker": "python3 -m forge.workflows.worker",
     "deploy": "vinext-cloudflare deploy",
     "typecheck": "tsc --noEmit"
   },

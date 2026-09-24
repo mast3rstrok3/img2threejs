@@ -7,6 +7,15 @@ Everything except this README is gitignored. That is deliberate: the committed a
 is the code change it produced, not the hundred PNGs it took to get there. The evidence stays on
 disk so the run can be debugged and re-read; it does not enter the repo's history.
 
+## Durable workflow jobs
+
+The self-hosted demo's **Refinement runs** UI stores its local queue under
+`workbench/workflows/jobs/<job-id>/`. Each requested loop is a complete invocation of `SKILL.md`,
+not one internal capture/fix step. A job contains `job.json`, an immutable `capture-view.json`,
+`events.jsonl`, worker logs, and one `invocation-NN/` evidence directory per completed skill run.
+The PM2 process `image2threejs-workflow-worker` owns repetition; the skill owns all analysis and
+model changes.
+
 ## Layout
 
 ```

@@ -118,6 +118,39 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
                 <button class="btn capture-btn" type="button" id="capture-view-load">Load saved</button>
               </div>
             </section>
+            <section class="refinement-tools" id="refinement-tools" hidden>
+              <div class="capture-tools-head">
+                <span class="capture-tools-title">Refinement runs</span>
+                <span class="capture-tools-status" id="refinement-status">checking…</span>
+              </div>
+              <p class="capture-tools-hint">
+                Each loop runs <code>SKILL.md</code> to completion. The saved capture angle is
+                locked when the run starts.
+              </p>
+              <form class="refinement-form" id="refinement-form">
+                <label>
+                  <span>Loops</span>
+                  <input id="refinement-loops" type="number" min="1" step="1" value="3" required />
+                </label>
+                <label>
+                  <span>Focus</span>
+                  <select id="refinement-focus">
+                    <option value="none">Highest gap</option>
+                    <option value="shape">Shape</option>
+                    <option value="part">Part</option>
+                    <option value="texture">Texture</option>
+                    <option value="detail">Detail</option>
+                  </select>
+                </label>
+                <label class="refinement-target-row" id="refinement-target-row" hidden>
+                  <span>Target</span>
+                  <input id="refinement-target" type="text" placeholder="Name the part or detail" />
+                </label>
+                <button class="btn capture-btn" id="refinement-start" type="submit">Start run</button>
+              </form>
+              <div class="refinement-run-row" id="refinement-run-row" hidden></div>
+              <div class="refinement-detail" id="refinement-detail" hidden></div>
+            </section>
             <div class="demo-links">
               <button class="btn btn-explode" id="demo-explode" type="button" aria-pressed="false" hidden>
                 <span class="explode-glyph">&#10021;</span> <span class="explode-label">Explode parts</span>
@@ -341,8 +374,10 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
     (window as unknown as Record<string, unknown>).__IMG2THREEJS_VIEWER__ = viewer;
   }
 
+  let refinementCleanup: (() => void) | undefined;
   if (!capture) {
     installCaptureTools(mount, viewer, id);
+    refinementCleanup = installRefinementTools(mount, id);
   }
 
   viewer.start(readyGate);
@@ -382,6 +417,7 @@ export function renderDemo(mount: HTMLElement, id: string): () => void {
     bar.removeEventListener('click', onBarClick);
     compact.removeEventListener('change', onCompactChange);
     canvasMount.removeEventListener('pointerdown', hideHint);
+    refinementCleanup?.();
     viewer.dispose();
   };
 }
@@ -538,4 +574,228 @@ function installCaptureTools(mount: HTMLElement, viewer: Viewer, id: string): vo
   void fetchCaptureView(id)
     .then(() => setStatus('saved view on file', 'ok'))
     .catch(() => setStatus('not set yet', 'warn'));
+}
+
+type RefinementRun = {
+  id: string;
+  revision: number;
+  model: string;
+  iterationBudget: number;
+  completedIterations: number;
+  currentIteration: number | null;
+  focus: string;
+  target: string | null;
+  status: string;
+  latestScore: number | null;
+  latestSummary?: string | null;
+  remainingMismatch?: string[];
+  branch: string;
+  stopReason: string | null;
+  createdAt: string;
+};
+
+/** Self-hosted workflow controls. Cloudflare-only deployments report the capability as absent. */
+function installRefinementTools(mount: HTMLElement, model: string): () => void {
+  const section = mount.querySelector<HTMLElement>('#refinement-tools')!;
+  const status = mount.querySelector<HTMLElement>('#refinement-status')!;
+  const form = mount.querySelector<HTMLFormElement>('#refinement-form')!;
+  const loops = mount.querySelector<HTMLInputElement>('#refinement-loops')!;
+  const focus = mount.querySelector<HTMLSelectElement>('#refinement-focus')!;
+  const targetRow = mount.querySelector<HTMLElement>('#refinement-target-row')!;
+  const target = mount.querySelector<HTMLInputElement>('#refinement-target')!;
+  const start = mount.querySelector<HTMLButtonElement>('#refinement-start')!;
+  const row = mount.querySelector<HTMLElement>('#refinement-run-row')!;
+  const detail = mount.querySelector<HTMLElement>('#refinement-detail')!;
+  section.hidden = false;
+
+  let runs: RefinementRun[] = [];
+  let selectedId: string | null = null;
+  let timer: number | undefined;
+  let disposed = false;
+  const terminal = new Set(['cancelled', 'completed', 'stopped-early', 'needs-input', 'failed']);
+
+  const setStatus = (text: string, kind: 'ok' | 'warn' | 'err' | 'idle' = 'idle'): void => {
+    status.textContent = text;
+    status.dataset.kind = kind;
+  };
+
+  const node = <K extends keyof HTMLElementTagNameMap>(
+    tag: K,
+    cls?: string,
+    text?: string,
+  ): HTMLElementTagNameMap[K] => {
+    const element = document.createElement(tag);
+    if (cls) element.className = cls;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  };
+
+  const request = async (method: string, body?: unknown): Promise<Record<string, unknown>> => {
+    const res = await fetch(
+      method === 'GET'
+        ? `/api/refinement-runs?model=${encodeURIComponent(model)}`
+        : '/api/refinement-runs',
+      {
+        method,
+        headers: body ? { 'content-type': 'application/json' } : undefined,
+        body: body ? JSON.stringify(body) : undefined,
+        cache: 'no-store',
+      },
+    );
+    const payload = await res.json().catch(() => ({})) as Record<string, unknown>;
+    if (!res.ok) throw new Error(typeof payload.error === 'string' ? payload.error : `request failed (${res.status})`);
+    return payload;
+  };
+
+  const renderDetail = (): void => {
+    const run = runs.find((item) => item.id === selectedId);
+    detail.replaceChildren();
+    detail.hidden = !run;
+    if (!run) return;
+
+    const head = node('div', 'refinement-detail-head');
+    head.append(
+      node('strong', undefined, `Run ${run.id.slice(-8)}`),
+      node('span', `run-state run-state-${run.status}`, run.status),
+    );
+    const facts = node('div', 'refinement-facts');
+    facts.append(
+      node('span', undefined, `${run.completedIterations}/${run.iterationBudget} complete`),
+      node('span', undefined, `focus · ${run.focus}${run.target ? ` · ${run.target}` : ''}`),
+    );
+    if (run.latestScore !== null) facts.append(node('span', undefined, `vision · ${run.latestScore.toFixed(2)}`));
+    if (run.latestSummary) facts.append(node('p', undefined, run.latestSummary));
+    if (run.stopReason) facts.append(node('p', 'refinement-error', run.stopReason));
+    if (run.remainingMismatch?.length) {
+      facts.append(node('p', undefined, `Still mismatched: ${run.remainingMismatch.join('; ')}`));
+    }
+    if (run.branch) facts.append(node('code', undefined, run.branch));
+
+    if (!terminal.has(run.status)) {
+      const controls = node('div', 'refinement-edit');
+      const label = node('label');
+      label.append(node('span', undefined, 'Total loops'));
+      const input = node('input');
+      input.type = 'number';
+      input.min = String(Math.max(1, run.completedIterations + (run.currentIteration ? 1 : 0)));
+      input.step = '1';
+      input.value = String(run.iterationBudget);
+      label.append(input);
+      const save = node('button', 'btn capture-btn', 'Update');
+      save.type = 'button';
+      save.addEventListener('click', async () => {
+        save.disabled = true;
+        try {
+          await request('PATCH', {
+            id: run.id,
+            revision: run.revision,
+            iterationBudget: Number(input.value),
+          });
+          await refresh();
+        } catch (error) {
+          setStatus((error as Error).message, 'err');
+        } finally {
+          save.disabled = false;
+        }
+      });
+      const cancel = node('button', 'btn capture-btn refinement-cancel', 'Cancel');
+      cancel.type = 'button';
+      cancel.addEventListener('click', async () => {
+        cancel.disabled = true;
+        try {
+          await request('POST', { action: 'cancel', id: run.id });
+          await refresh();
+        } catch (error) {
+          setStatus((error as Error).message, 'err');
+        } finally {
+          cancel.disabled = false;
+        }
+      });
+      controls.append(label, save, cancel);
+      detail.append(head, facts, controls);
+    } else {
+      detail.append(head, facts);
+    }
+  };
+
+  const renderRuns = (): void => {
+    row.replaceChildren();
+    row.hidden = runs.length === 0;
+    for (const run of runs) {
+      const card = node('button', 'refinement-run-card');
+      card.type = 'button';
+      card.classList.toggle('is-active', run.id === selectedId);
+      card.append(
+        node('strong', undefined, run.id.slice(-8)),
+        node('span', undefined, `${run.completedIterations}/${run.iterationBudget} · ${run.status}`),
+      );
+      card.addEventListener('click', () => {
+        selectedId = run.id;
+        renderRuns();
+        renderDetail();
+      });
+      row.append(card);
+    }
+    renderDetail();
+  };
+
+  const schedule = (): void => {
+    if (timer) window.clearTimeout(timer);
+    if (!disposed && runs.some((run) => !terminal.has(run.status))) {
+      timer = window.setTimeout(() => void refresh(), 2500);
+    }
+  };
+
+  const refresh = async (): Promise<void> => {
+    try {
+      const payload = await request('GET');
+      runs = (payload.runs as RefinementRun[] | undefined) ?? [];
+      if (selectedId && !runs.some((run) => run.id === selectedId)) selectedId = null;
+      if (!selectedId && runs.length) selectedId = runs[0].id;
+      start.disabled = false;
+      setStatus(runs.some((run) => !terminal.has(run.status)) ? 'worker active' : 'ready', 'ok');
+      renderRuns();
+      schedule();
+    } catch (error) {
+      start.disabled = true;
+      setStatus((error as Error).message, 'warn');
+      form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select').forEach((el) => {
+        el.disabled = true;
+      });
+    }
+  };
+
+  const updateTarget = (): void => {
+    const needed = focus.value === 'part' || focus.value === 'detail';
+    targetRow.hidden = !needed;
+    target.required = needed;
+  };
+  focus.addEventListener('change', updateTarget);
+  updateTarget();
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    start.disabled = true;
+    setStatus('queueing…');
+    try {
+      const payload = await request('POST', {
+        model,
+        iterationBudget: Number(loops.value),
+        focus: focus.value,
+        target: target.value.trim() || null,
+      });
+      const created = payload.run as RefinementRun;
+      selectedId = created.id;
+      await refresh();
+    } catch (error) {
+      setStatus((error as Error).message, 'err');
+      start.disabled = false;
+    }
+  });
+
+  void refresh();
+  return () => {
+    disposed = true;
+    if (timer) window.clearTimeout(timer);
+  };
 }

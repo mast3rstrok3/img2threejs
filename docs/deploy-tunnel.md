@@ -11,6 +11,18 @@ human eye, and running beside the checkout means the pose is written **straight 
 no sync step, one source of truth. (`docs/deploy-cloudflare.md` covers the Workers alternative,
 where there is no filesystem and poses go to KV instead.)
 
+The same self-hosted process can run complete skill workflows. `ecosystem.config.cjs` defines both
+`image2threejs` and `image2threejs-workflow-worker`; start or reload them together:
+
+```bash
+pm2 startOrReload ecosystem.config.cjs
+pm2 save
+```
+
+In a demo, save the reference-aligned capture view first, then use **Refinement runs**. One loop is
+one complete `SKILL.md` invocation. The worker requires a clean tracked worktree before claiming a
+new job and creates a dedicated `refine/<model>/<job-id>` branch.
+
 **Order matters: create the Access application before routing the hostname.** If the hostname
 already resolves through a proxied wildcard record, adding a tunnel ingress rule publishes the app
 the moment `cloudflared` reloads — there is no DNS step to act as a safety margin.

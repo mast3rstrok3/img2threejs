@@ -38,7 +38,7 @@
     ],
     "descriptionRule": "Use measurable 3D graphics terms. Avoid vague words unless they are paired with concrete geometry/material/shader parameters."
   },
-  "sourceImage": "attached-reference: single isometric view of a rounded two-storey courtyard medical clinic",
+  "sourceImage": "attached-reference: single isometric view of a rounded single-storey courtyard medical clinic",
   "referenceCamera": {
     "solved": true,
     "fovDegrees": 28,
@@ -93,7 +93,7 @@
         "grass",
         "warm interior fabric"
       ],
-      "notes": "Observable: a two-storey rounded rectangular building surrounds an open square courtyard. White fascia bands frame amber curtain walls; grass and pale paving form roof and ground ribbons."
+      "notes": "Observable: a single-storey rounded rectangular building surrounds an open square courtyard. White fascia bands frame amber curtain walls; grass and pale paving form roof and ground ribbons."
     },
     "complexity": {
       "tier": "complex",
@@ -486,12 +486,12 @@
       "confidence": 0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "attached-reference: single isometric view of a rounded two-storey courtyard medical clinic"
+    "sourceImage": "attached-reference: single isometric view of a rounded single-storey courtyard medical clinic"
   },
   "qualityContract": {
     "qualityBar": "complex",
     "definitionOfDone": [
-      "At the reference isometric view, the model reads immediately as the same rounded two-storey medical clinic: square courtyard void, layered white fascia, green roof ribbons, warm modular glazing, front portal, two crosses, and landscaped stepped plinth.",
+      "At the reference isometric view, the model reads immediately as the same rounded single-storey medical clinic: square courtyard void, layered white fascia, green roof ribbons, warm modular glazing, front portal, two crosses, and landscaped stepped plinth.",
       "At two orbit views, roof and courtyard remain genuinely volumetric and no façade collapses into a projection plane.",
       "All named architectural assemblies remain independently clickable and separable by explode mode."
     ],
@@ -524,7 +524,7 @@
         "name": "Warm curtain-wall and mullion system",
         "required": true,
         "qualityCriteria": [
-          "Front, left, upper, and courtyard glazing use repeated dark mullions and reveal warm interior depth."
+          "Front, left, and courtyard glazing use repeated dark mullions and reveal warm interior depth."
         ],
         "evidenceRefs": [
           "full-object"
@@ -581,7 +581,7 @@
       }
     ],
     "visualDeltaChecks": [
-      "outer rounded-square silhouette and two-storey height ratio",
+      "outer rounded-square silhouette and single-storey height ratio",
       "courtyard aperture size and roof-ring thickness",
       "front portal position relative to long glass façade",
       "curtain-wall bay spacing and dark mullion value",
@@ -758,7 +758,6 @@
       "componentRefs": [
         "front-curtain-wall",
         "left-curtain-wall",
-        "upper-front-wall",
         "courtyard-walls",
         "facade-mullions"
       ],
@@ -1017,7 +1016,7 @@
       "attachment": null,
       "dimensions": {
         "width": 10.4,
-        "height": 5.1,
+        "height": 2.9,
         "depth": 9.2,
         "units": "world",
         "confidence": 0.86
@@ -1075,7 +1074,7 @@
           ],
           "scale": [
             10.4,
-            5.1,
+            2.9,
             9.2
           ],
           "isTrigger": false,
@@ -1427,157 +1426,6 @@
       }
     },
     {
-      "id": "upper-storey",
-      "name": "Upper-storey clinic ring shell",
-      "level": "macro",
-      "role": "static-part",
-      "importance": 0.75,
-      "confidence": 0.8,
-      "primitive": "box",
-      "topologyClass": "assembled-solid",
-      "topologyRationale": "Discrete rigid architectural assembly with countable planar or simply curved faces.",
-      "geometryDescriptor": {
-        "topologyIntent": "bevel-ready rigid assembly with stable object-space dimensions",
-        "edgeTreatment": {
-          "type": "chamfer",
-          "bevelRadius": 0.06,
-          "segments": 3
-        },
-        "deformationStack": [],
-        "uvStrategy": "world-scaled procedural coordinates",
-        "normalStrategy": "generated vertex normals plus independent procedural bump where required"
-      },
-      "parent": "root",
-      "attachment": null,
-      "dimensions": {
-        "width": 8,
-        "height": 1.55,
-        "depth": 6.45,
-        "units": "world",
-        "confidence": 0.8
-      },
-      "transform": {
-        "position": [
-          -0.12,
-          3,
-          -0.2
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          1,
-          1,
-          1
-        ]
-      },
-      "actionProfile": {
-        "animationRole": "static-part",
-        "pivot": {
-          "mode": "center",
-          "localPosition": [
-            0,
-            0,
-            0
-          ],
-          "axis": [
-            0,
-            1,
-            0
-          ],
-          "confidence": 0.8
-        },
-        "transformChannels": {
-          "translate": true,
-          "rotate": true,
-          "scale": true,
-          "bend": false,
-          "twist": false,
-          "detach": false,
-          "visibility": true,
-          "materialState": true
-        },
-        "sockets": [],
-        "collider": {
-          "type": "box",
-          "offset": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            8,
-            1.55,
-            6.45
-          ],
-          "isTrigger": false,
-          "notes": "Compound architectural collider proxy; courtyard remains a non-colliding opening."
-        },
-        "constraints": [],
-        "destruction": {
-          "breakable": false,
-          "fractureGroup": "root",
-          "seamRefs": [],
-          "detachableFragments": [],
-          "breakImpulse": 8,
-          "debrisMaterial": "white-shell"
-        }
-      },
-      "material": "white-shell",
-      "materialLayers": [
-        "white-shell"
-      ],
-      "deformations": [],
-      "joints": [],
-      "seams": [],
-      "localFeatures": [
-        {
-          "id": "upper-corner-radii",
-          "placement": "image-observed region",
-          "geometryEffect": "implemented as separate named geometry or material-local response",
-          "confidence": 0.8,
-          "evidenceRefs": [
-            "full-object"
-          ]
-        },
-        {
-          "id": "upper-white-fascia",
-          "placement": "image-observed region",
-          "geometryEffect": "implemented as separate named geometry or material-local response",
-          "confidence": 0.8,
-          "evidenceRefs": [
-            "full-object"
-          ]
-        }
-      ],
-      "surfaceDetail": {
-        "macroRoughness": 0,
-        "microRoughness": 0,
-        "bumpAmplitude": 0,
-        "normalPattern": "",
-        "displacementPattern": "",
-        "occlusionPattern": "",
-        "edgeWearPattern": "",
-        "notes": ""
-      },
-      "evidenceRefs": [
-        "full-object"
-      ],
-      "details": [],
-      "fidelityTier": "blockout",
-      "colorMaterialRecipe": {
-        "dominantAlbedo": "rgba(242, 241, 237, 1)",
-        "secondaryAlbedo": "rgba(222, 222, 217, 1)",
-        "materialClass": "plastic",
-        "materialClassConfidence": 0.8,
-        "evidenceRefs": [
-          "full-object"
-        ]
-      }
-    },
-    {
       "id": "roof-assembly",
       "name": "Roof promenade and courtyard",
       "level": "macro",
@@ -1610,7 +1458,7 @@
       "transform": {
         "position": [
           -0.05,
-          4.08,
+          2.38,
           -0.18
         ],
         "rotation": [
@@ -2324,290 +2172,6 @@
       }
     },
     {
-      "id": "upper-front-wall",
-      "name": "Upper front curtain wall",
-      "level": "meso",
-      "role": "static-part",
-      "importance": 0.62,
-      "confidence": 0.8,
-      "primitive": "box",
-      "topologyClass": "assembled-solid",
-      "topologyRationale": "Discrete rigid architectural assembly with countable planar or simply curved faces.",
-      "geometryDescriptor": {
-        "topologyIntent": "bevel-ready rigid assembly with stable object-space dimensions",
-        "edgeTreatment": {
-          "type": "chamfer",
-          "bevelRadius": 0.06,
-          "segments": 3
-        },
-        "deformationStack": [],
-        "uvStrategy": "world-scaled procedural coordinates",
-        "normalStrategy": "generated vertex normals plus independent procedural bump where required"
-      },
-      "parent": "upper-storey",
-      "attachment": null,
-      "dimensions": {
-        "width": 6.7,
-        "height": 1.38,
-        "depth": 0.12,
-        "units": "world",
-        "confidence": 0.8
-      },
-      "transform": {
-        "position": [
-          -0.38,
-          3.05,
-          3.05
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          1,
-          1,
-          1
-        ]
-      },
-      "actionProfile": {
-        "animationRole": "static-part",
-        "pivot": {
-          "mode": "center",
-          "localPosition": [
-            0,
-            0,
-            0
-          ],
-          "axis": [
-            0,
-            1,
-            0
-          ],
-          "confidence": 0.8
-        },
-        "transformChannels": {
-          "translate": true,
-          "rotate": true,
-          "scale": true,
-          "bend": false,
-          "twist": false,
-          "detach": false,
-          "visibility": true,
-          "materialState": true
-        },
-        "sockets": [],
-        "collider": {
-          "type": "box",
-          "offset": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            6.7,
-            1.38,
-            0.12
-          ],
-          "isTrigger": false,
-          "notes": "Compound architectural collider proxy; courtyard remains a non-colliding opening."
-        },
-        "constraints": [],
-        "destruction": {
-          "breakable": true,
-          "fractureGroup": "upper-storey",
-          "seamRefs": [],
-          "detachableFragments": [],
-          "breakImpulse": 8,
-          "debrisMaterial": "glass"
-        }
-      },
-      "material": "glass",
-      "materialLayers": [
-        "glass"
-      ],
-      "deformations": [],
-      "joints": [],
-      "seams": [],
-      "localFeatures": [
-        {
-          "id": "upper-front-bay-rhythm",
-          "placement": "image-observed region",
-          "geometryEffect": "implemented as separate named geometry or material-local response",
-          "confidence": 0.8,
-          "evidenceRefs": [
-            "full-object"
-          ]
-        }
-      ],
-      "surfaceDetail": {
-        "macroRoughness": 0,
-        "microRoughness": 0,
-        "bumpAmplitude": 0,
-        "normalPattern": "",
-        "displacementPattern": "",
-        "occlusionPattern": "",
-        "edgeWearPattern": "",
-        "notes": ""
-      },
-      "evidenceRefs": [
-        "full-object"
-      ],
-      "details": [],
-      "fidelityTier": "blockout",
-      "colorMaterialRecipe": {
-        "dominantAlbedo": "rgba(216, 179, 111, 0.34)",
-        "secondaryAlbedo": "rgba(241, 199, 121, 0.28)",
-        "materialClass": "glass",
-        "materialClassConfidence": 0.8,
-        "evidenceRefs": [
-          "full-object"
-        ]
-      }
-    },
-    {
-      "id": "upper-left-wall",
-      "name": "Upper left curtain wall",
-      "level": "meso",
-      "role": "static-part",
-      "importance": 0.62,
-      "confidence": 0.8,
-      "primitive": "box",
-      "topologyClass": "assembled-solid",
-      "topologyRationale": "Discrete rigid architectural assembly with countable planar or simply curved faces.",
-      "geometryDescriptor": {
-        "topologyIntent": "bevel-ready rigid assembly with stable object-space dimensions",
-        "edgeTreatment": {
-          "type": "chamfer",
-          "bevelRadius": 0.06,
-          "segments": 3
-        },
-        "deformationStack": [],
-        "uvStrategy": "world-scaled procedural coordinates",
-        "normalStrategy": "generated vertex normals plus independent procedural bump where required"
-      },
-      "parent": "upper-storey",
-      "attachment": null,
-      "dimensions": {
-        "width": 0.12,
-        "height": 1.38,
-        "depth": 5.7,
-        "units": "world",
-        "confidence": 0.8
-      },
-      "transform": {
-        "position": [
-          -3.93,
-          3.05,
-          -0.25
-        ],
-        "rotation": [
-          0,
-          0,
-          0
-        ],
-        "scale": [
-          1,
-          1,
-          1
-        ]
-      },
-      "actionProfile": {
-        "animationRole": "static-part",
-        "pivot": {
-          "mode": "center",
-          "localPosition": [
-            0,
-            0,
-            0
-          ],
-          "axis": [
-            0,
-            1,
-            0
-          ],
-          "confidence": 0.8
-        },
-        "transformChannels": {
-          "translate": true,
-          "rotate": true,
-          "scale": true,
-          "bend": false,
-          "twist": false,
-          "detach": false,
-          "visibility": true,
-          "materialState": true
-        },
-        "sockets": [],
-        "collider": {
-          "type": "box",
-          "offset": [
-            0,
-            0,
-            0
-          ],
-          "scale": [
-            0.12,
-            1.38,
-            5.7
-          ],
-          "isTrigger": false,
-          "notes": "Compound architectural collider proxy; courtyard remains a non-colliding opening."
-        },
-        "constraints": [],
-        "destruction": {
-          "breakable": true,
-          "fractureGroup": "upper-storey",
-          "seamRefs": [],
-          "detachableFragments": [],
-          "breakImpulse": 8,
-          "debrisMaterial": "glass"
-        }
-      },
-      "material": "glass",
-      "materialLayers": [
-        "glass"
-      ],
-      "deformations": [],
-      "joints": [],
-      "seams": [],
-      "localFeatures": [
-        {
-          "id": "upper-left-bay-rhythm",
-          "placement": "image-observed region",
-          "geometryEffect": "implemented as separate named geometry or material-local response",
-          "confidence": 0.8,
-          "evidenceRefs": [
-            "full-object"
-          ]
-        }
-      ],
-      "surfaceDetail": {
-        "macroRoughness": 0,
-        "microRoughness": 0,
-        "bumpAmplitude": 0,
-        "normalPattern": "",
-        "displacementPattern": "",
-        "occlusionPattern": "",
-        "edgeWearPattern": "",
-        "notes": ""
-      },
-      "evidenceRefs": [
-        "full-object"
-      ],
-      "details": [],
-      "fidelityTier": "blockout",
-      "colorMaterialRecipe": {
-        "dominantAlbedo": "rgba(216, 179, 111, 0.34)",
-        "secondaryAlbedo": "rgba(241, 199, 121, 0.28)",
-        "materialClass": "glass",
-        "materialClassConfidence": 0.8,
-        "evidenceRefs": [
-          "full-object"
-        ]
-      }
-    },
-    {
       "id": "courtyard-walls",
       "name": "Courtyard amber glazing",
       "level": "meso",
@@ -2628,11 +2192,11 @@
         "uvStrategy": "world-scaled procedural coordinates",
         "normalStrategy": "generated vertex normals plus independent procedural bump where required"
       },
-      "parent": "upper-storey",
+      "parent": "ground-storey",
       "attachment": null,
       "dimensions": {
         "width": 3.25,
-        "height": 1.5,
+        "height": 1.57,
         "depth": 2.55,
         "units": "world",
         "confidence": 0.8
@@ -2640,7 +2204,7 @@
       "transform": {
         "position": [
           0.2,
-          3.08,
+          1.31,
           -0.25
         ],
         "rotation": [
@@ -2690,7 +2254,7 @@
           ],
           "scale": [
             3.25,
-            1.5,
+            1.57,
             2.55
           ],
           "isTrigger": false,
@@ -2699,7 +2263,7 @@
         "constraints": [],
         "destruction": {
           "breakable": true,
-          "fractureGroup": "upper-storey",
+          "fractureGroup": "ground-storey",
           "seamRefs": [],
           "detachableFragments": [],
           "breakImpulse": 8,
@@ -2782,15 +2346,15 @@
       "parent": "ground-storey",
       "attachment": null,
       "dimensions": {
-        "width": 2.6,
+        "width": 7.15,
         "height": 1.82,
-        "depth": 0.42,
+        "depth": 0.9,
         "units": "world",
         "confidence": 0.8
       },
       "transform": {
         "position": [
-          1.55,
+          -0.24,
           1.25,
           3.28
         ],
@@ -2840,9 +2404,9 @@
             0
           ],
           "scale": [
-            2.6,
+            7.15,
             1.82,
-            0.42
+            0.9
           ],
           "isTrigger": false,
           "notes": "Compound architectural collider proxy; courtyard remains a non-colliding opening."
@@ -3235,7 +2799,7 @@
       "transform": {
         "position": [
           -0.05,
-          4.16,
+          2.49,
           -0.18
         ],
         "rotation": [
@@ -3377,7 +2941,7 @@
       "transform": {
         "position": [
           -0.05,
-          4.19,
+          2.49,
           -0.18
         ],
         "rotation": [
@@ -3519,7 +3083,7 @@
       "transform": {
         "position": [
           -0.05,
-          4.26,
+          2.53,
           -0.18
         ],
         "rotation": [
@@ -3661,7 +3225,7 @@
       "transform": {
         "position": [
           0.2,
-          4.25,
+          2.53,
           -0.25
         ],
         "rotation": [
@@ -3936,17 +3500,17 @@
       "parent": "site-plinth",
       "attachment": null,
       "dimensions": {
-        "width": 3.2,
+        "width": 4.8,
         "height": 0.3,
-        "depth": 1.35,
+        "depth": 1.72,
         "units": "world",
         "confidence": 0.8
       },
       "transform": {
         "position": [
-          1.55,
+          0.92,
           0.27,
-          3.86
+          3.62
         ],
         "rotation": [
           0,
@@ -3994,9 +3558,9 @@
             0
           ],
           "scale": [
-            3.2,
+            4.8,
             0.3,
-            1.35
+            1.72
           ],
           "isTrigger": false,
           "notes": "Compound architectural collider proxy; courtyard remains a non-colliding opening."
@@ -4341,9 +3905,9 @@
     {
       "id": "interior-floor",
       "name": "Visible lobby interior",
-      "level": "meso",
+      "level": "macro",
       "role": "static-part",
-      "importance": 0.62,
+      "importance": 0.75,
       "confidence": 0.8,
       "primitive": "box",
       "topologyClass": "assembled-solid",
@@ -4359,7 +3923,7 @@
         "uvStrategy": "world-scaled procedural coordinates",
         "normalStrategy": "generated vertex normals plus independent procedural bump where required"
       },
-      "parent": "ground-storey",
+      "parent": "root",
       "attachment": null,
       "dimensions": {
         "width": 6.8,
@@ -4429,8 +3993,8 @@
         },
         "constraints": [],
         "destruction": {
-          "breakable": true,
-          "fractureGroup": "ground-storey",
+          "breakable": false,
+          "fractureGroup": "root",
           "seamRefs": [],
           "detachableFragments": [],
           "breakImpulse": 8,
@@ -6551,9 +6115,9 @@
         "root",
         "site-plinth",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
-        "landscape-assembly"
+        "landscape-assembly",
+        "interior-floor"
       ],
       "acceptance": [
         "Silhouette reads correctly without materials.",
@@ -6568,14 +6132,11 @@
         "root",
         "site-plinth",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
         "landscape-assembly",
         "outer-floor-slabs",
         "front-curtain-wall",
         "left-curtain-wall",
-        "upper-front-wall",
-        "upper-left-wall",
         "courtyard-walls",
         "entrance-portal",
         "entrance-doors",
@@ -6606,14 +6167,11 @@
       "componentRefs": [
         "site-plinth",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
         "landscape-assembly",
         "outer-floor-slabs",
         "front-curtain-wall",
         "left-curtain-wall",
-        "upper-front-wall",
-        "upper-left-wall",
         "courtyard-walls",
         "entrance-portal",
         "entrance-doors",
@@ -6647,14 +6205,11 @@
       "componentRefs": [
         "site-plinth",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
         "landscape-assembly",
         "outer-floor-slabs",
         "front-curtain-wall",
         "left-curtain-wall",
-        "upper-front-wall",
-        "upper-left-wall",
         "courtyard-walls",
         "entrance-portal",
         "entrance-doors",
@@ -6694,14 +6249,11 @@
       "componentRefs": [
         "site-plinth",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
         "landscape-assembly",
         "outer-floor-slabs",
         "front-curtain-wall",
         "left-curtain-wall",
-        "upper-front-wall",
-        "upper-left-wall",
         "courtyard-walls",
         "entrance-portal",
         "entrance-doors",
@@ -6735,9 +6287,9 @@
       "componentRefs": [
         "root",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
-        "landscape-assembly"
+        "landscape-assembly",
+        "interior-floor"
       ],
       "acceptance": [
         "lightingFromPhoto identifies key light direction/color/intensity, fill light, rim or environment light, and ambient color.",
@@ -6754,14 +6306,11 @@
         "root",
         "site-plinth",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
         "landscape-assembly",
         "outer-floor-slabs",
         "front-curtain-wall",
         "left-curtain-wall",
-        "upper-front-wall",
-        "upper-left-wall",
         "courtyard-walls",
         "entrance-portal",
         "entrance-doors",
@@ -6791,9 +6340,9 @@
       "componentRefs": [
         "root",
         "ground-storey",
-        "upper-storey",
         "roof-assembly",
-        "landscape-assembly"
+        "landscape-assembly",
+        "interior-floor"
       ],
       "acceptance": [
         "Triangle count, draw calls, instancing, LOD strategy, and FPS target are documented or verified.",
@@ -6823,10 +6372,10 @@
     "notes": "Instanced/reused geometries for mullions, chairs, lights, and grass relief; no external models."
   },
   "lightingFromPhoto": [
-    "Key light: large soft neutral-warm directional light from upper camera-left, intensity 3.2, shadow radius 5.",
-    "Fill light: cool-white hemisphere/environment fill at intensity 1.15 to keep white shell readable.",
-    "Rim light: broad rear-right area light at intensity 1.4 to separate parapets and glass edges.",
-    "Exposure 1.02 with ACES filmic tone mapping; near-white studio background #f4f2ef.",
+    "Key light: large soft neutral-warm directional light from upper camera-left, intensity 2.2, shadow radius 5.",
+    "Fill light: cool-white hemisphere/environment fill at intensity 1.05 to keep white shell readable.",
+    "Rim light: broad rear-right directional light at intensity 1.15 to separate parapets and glass edges.",
+    "Exposure 0.82 with ACES filmic tone mapping; near-white studio background #f4f2ef.",
     "Soft contact shadows under plinth, curbs, steps, furniture, and façade slabs; no ambient-only lighting."
   ],
   "proceduralStrategy": [

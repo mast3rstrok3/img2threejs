@@ -39,5 +39,18 @@ module.exports = {
       autorestart: true,
       max_restarts: 10,
     },
+    {
+      name: 'image2threejs-workflow-worker',
+      cwd: __dirname,
+      script: 'python3',
+      args: '-m forge.workflows.worker',
+      env: {
+        NODE_ENV: 'production',
+        IMG2THREEJS_WORKFLOW_POLL_SECONDS: '2',
+        ...local,
+      },
+      autorestart: true,
+      max_restarts: 10,
+    },
   ],
 };

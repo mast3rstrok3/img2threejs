@@ -1,6 +1,6 @@
 {
   "targetName": "Rounded Courtyard Medical Clinic",
-  "sourceImage": "attached-reference: single isometric view of a rounded two-storey courtyard medical clinic",
+  "sourceImage": "attached-reference: single isometric view of a rounded single-storey courtyard medical clinic",
   "preSpecAssessment": {
     "objectClass": {
       "primaryType": "architectural medical-clinic diorama",
@@ -29,7 +29,7 @@
         "grass",
         "warm interior fabric"
       ],
-      "notes": "Observable: a two-storey rounded rectangular building surrounds an open square courtyard. White fascia bands frame amber curtain walls; grass and pale paving form roof and ground ribbons."
+      "notes": "Observable: a single-storey rounded rectangular building surrounds an open square courtyard. White fascia bands frame amber curtain walls; grass and pale paving form roof and ground ribbons."
     },
     "complexity": {
       "tier": "complex",
@@ -422,12 +422,12 @@
       "confidence": 0,
       "note": "Only meaningful when objectClass.primaryDomain is character or hybrid. Set applies=true and fill from forge/stage1_intake/extract_landmarks.py. See grimoire/character/reconstruction.md and grimoire/character/likeness_maximization.md."
     },
-    "sourceImage": "attached-reference: single isometric view of a rounded two-storey courtyard medical clinic"
+    "sourceImage": "attached-reference: single isometric view of a rounded single-storey courtyard medical clinic"
   },
   "qualityContract": {
     "qualityBar": "complex",
     "definitionOfDone": [
-      "At the reference isometric view, the model reads immediately as the same rounded two-storey medical clinic: square courtyard void, layered white fascia, green roof ribbons, warm modular glazing, front portal, two crosses, and landscaped stepped plinth.",
+      "At the reference isometric view, the model reads immediately as the same rounded single-storey medical clinic: square courtyard void, layered white fascia, green roof ribbons, warm modular glazing, front portal, two crosses, and landscaped stepped plinth.",
       "At two orbit views, roof and courtyard remain genuinely volumetric and no façade collapses into a projection plane.",
       "All named architectural assemblies remain independently clickable and separable by explode mode."
     ],
@@ -460,7 +460,7 @@
         "name": "Warm curtain-wall and mullion system",
         "required": true,
         "qualityCriteria": [
-          "Front, left, upper, and courtyard glazing use repeated dark mullions and reveal warm interior depth."
+          "Front, left, and courtyard glazing use repeated dark mullions and reveal warm interior depth."
         ],
         "evidenceRefs": [
           "full-object"
@@ -517,7 +517,7 @@
       }
     ],
     "visualDeltaChecks": [
-      "outer rounded-square silhouette and two-storey height ratio",
+      "outer rounded-square silhouette and single-storey height ratio",
       "courtyard aperture size and roof-ring thickness",
       "front portal position relative to long glass façade",
       "curtain-wall bay spacing and dark mullion value",

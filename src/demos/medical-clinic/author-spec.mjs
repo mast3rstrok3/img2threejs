@@ -5,7 +5,7 @@ const assessmentPath = new URL('./pre-spec-assessment.json', import.meta.url);
 const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
 
 const observedSource =
-  'attached-reference: single isometric view of a rounded two-storey courtyard medical clinic';
+  'attached-reference: single isometric view of a rounded single-storey courtyard medical clinic';
 
 spec.sourceImage = observedSource;
 spec.suitability = 'conditional';
@@ -40,7 +40,7 @@ assessment.objectClass = {
   motionPotential: ['static prop', 'whole-object transform', 'detachable architectural assemblies'],
   materialFamilies: ['painted composite', 'glass-like', 'metal', 'stone', 'grass', 'warm interior fabric'],
   notes:
-    'Observable: a two-storey rounded rectangular building surrounds an open square courtyard. ' +
+    'Observable: a single-storey rounded rectangular building surrounds an open square courtyard. ' +
     'White fascia bands frame amber curtain walls; grass and pale paving form roof and ground ribbons.',
 };
 assessment.complexity = {
@@ -170,7 +170,7 @@ const root = component({
   parent: null,
   role: 'root',
   material: 'utility-invisible',
-  dims: [10.4, 5.1, 9.2],
+  dims: [10.4, 2.9, 9.2],
   confidence: 0.86,
   importance: 1,
 });
@@ -189,28 +189,25 @@ spec.componentTree = [
   root,
   component({ id: 'site-plinth', name: 'Rounded stone site plinth', level: 'macro', dims: [10.4, 0.22, 9.2], position: [0, 0.11, 0], material: 'paving', localFeatures: ['plinth-rounded-corners', 'paving-grid'] }),
   component({ id: 'ground-storey', name: 'Ground-storey clinic ring shell', level: 'macro', dims: [8.1, 1.75, 6.55], position: [0, 1.25, -0.15], localFeatures: ['ground-corner-radii', 'ground-white-fascia'] }),
-  component({ id: 'upper-storey', name: 'Upper-storey clinic ring shell', level: 'macro', dims: [8.0, 1.55, 6.45], position: [-0.12, 3.0, -0.2], localFeatures: ['upper-corner-radii', 'upper-white-fascia'] }),
-  component({ id: 'roof-assembly', name: 'Roof promenade and courtyard', level: 'macro', dims: [8.25, 0.34, 6.7], position: [-0.05, 4.08, -0.18], material: 'paving', localFeatures: ['roof-square-opening', 'roof-medical-cross'] }),
+  component({ id: 'roof-assembly', name: 'Roof promenade and courtyard', level: 'macro', dims: [8.25, 0.34, 6.7], position: [-0.05, 2.38, -0.18], material: 'paving', localFeatures: ['roof-square-opening', 'roof-medical-cross'] }),
   component({ id: 'landscape-assembly', name: 'Landscaped grass ribbons', level: 'macro', dims: [10.0, 0.24, 8.6], position: [0, 0.27, 0], material: 'grass', localFeatures: ['grass-curb-ribbons', 'grass-micro-blades'] }),
 
   component({ id: 'outer-floor-slabs', name: 'White outer floor slabs', level: 'meso', parent: 'ground-storey', dims: [8.25, 0.18, 6.7], position: [0, 2.18, -0.18], localFeatures: ['slab-bevel-highlight'] }),
   component({ id: 'front-curtain-wall', name: 'Front warm curtain wall', level: 'meso', parent: 'ground-storey', dims: [6.15, 1.62, 0.12], position: [-0.82, 1.28, 3.12], material: 'glass', localFeatures: ['front-glass-gloss', 'front-mullion-seams'] }),
   component({ id: 'left-curtain-wall', name: 'Left warm curtain wall', level: 'meso', parent: 'ground-storey', dims: [0.12, 1.62, 5.65], position: [-3.96, 1.28, -0.28], material: 'glass', localFeatures: ['left-glass-gloss', 'left-mullion-seams'] }),
-  component({ id: 'upper-front-wall', name: 'Upper front curtain wall', level: 'meso', parent: 'upper-storey', dims: [6.7, 1.38, 0.12], position: [-0.38, 3.05, 3.05], material: 'glass', localFeatures: ['upper-front-bay-rhythm'] }),
-  component({ id: 'upper-left-wall', name: 'Upper left curtain wall', level: 'meso', parent: 'upper-storey', dims: [0.12, 1.38, 5.7], position: [-3.93, 3.05, -0.25], material: 'glass', localFeatures: ['upper-left-bay-rhythm'] }),
-  component({ id: 'courtyard-walls', name: 'Courtyard amber glazing', level: 'meso', parent: 'upper-storey', dims: [3.25, 1.5, 2.55], position: [0.2, 3.08, -0.25], material: 'glass', localFeatures: ['courtyard-glass-gloss', 'courtyard-mullion-seams'] }),
-  component({ id: 'entrance-portal', name: 'Stepped entrance shell and steps', level: 'meso', parent: 'ground-storey', dims: [2.6, 1.82, 0.42], position: [1.55, 1.25, 3.28], localFeatures: ['portal-rounded-return', 'portal-canopy-bevel'] }),
+  component({ id: 'courtyard-walls', name: 'Courtyard amber glazing', level: 'meso', parent: 'ground-storey', dims: [3.25, 1.57, 2.55], position: [0.2, 1.31, -0.25], material: 'glass', localFeatures: ['courtyard-glass-gloss', 'courtyard-mullion-seams'] }),
+  component({ id: 'entrance-portal', name: 'Stepped entrance shell and steps', level: 'meso', parent: 'ground-storey', dims: [7.15, 1.82, 0.9], position: [-0.24, 1.25, 3.28], localFeatures: ['portal-rounded-return', 'portal-canopy-bevel'] }),
   component({ id: 'entrance-doors', name: 'Entrance double doors', level: 'meso', parent: 'entrance-portal', dims: [1.48, 1.48, 0.08], position: [1.55, 1.18, 3.36], material: 'glass', localFeatures: ['door-pull-handles', 'door-center-seam'] }),
   component({ id: 'facade-cross-pier', name: 'Illuminated medical cross pier', level: 'meso', parent: 'ground-storey', dims: [0.78, 1.86, 0.42], position: [3.22, 1.24, 3.08], localFeatures: ['facade-cross-emissive'] }),
-  component({ id: 'roof-walkway', name: 'Pale roof promenade ring', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [7.25, 0.1, 5.7], position: [-0.05, 4.16, -0.18], material: 'paving', localFeatures: ['roof-paving-grid'] }),
-  component({ id: 'roof-grass-band', name: 'Outer green roof band', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [7.9, 0.11, 6.35], position: [-0.05, 4.19, -0.18], material: 'grass', localFeatures: ['roof-grass-blades'] }),
-  component({ id: 'outer-parapet', name: 'Outer rounded roof parapet', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [8.24, 0.22, 6.69], position: [-0.05, 4.26, -0.18], localFeatures: ['outer-parapet-bevel'] }),
-  component({ id: 'courtyard-parapet', name: 'Inner courtyard parapet', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [3.45, 0.25, 2.72], position: [0.2, 4.25, -0.25], localFeatures: ['courtyard-parapet-bevel'] }),
+  component({ id: 'roof-walkway', name: 'Pale roof promenade ring', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [7.25, 0.1, 5.7], position: [-0.05, 2.49, -0.18], material: 'paving', localFeatures: ['roof-paving-grid'] }),
+  component({ id: 'roof-grass-band', name: 'Outer green roof band', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [7.9, 0.11, 6.35], position: [-0.05, 2.49, -0.18], material: 'grass', localFeatures: ['roof-grass-blades'] }),
+  component({ id: 'outer-parapet', name: 'Outer rounded roof parapet', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [8.24, 0.22, 6.69], position: [-0.05, 2.53, -0.18], localFeatures: ['outer-parapet-bevel'] }),
+  component({ id: 'courtyard-parapet', name: 'Inner courtyard parapet', level: 'meso', parent: 'roof-assembly', primitive: 'extrude', dims: [3.45, 0.25, 2.72], position: [0.2, 2.53, -0.25], localFeatures: ['courtyard-parapet-bevel'] }),
   component({ id: 'courtyard-lawn', name: 'Sunken courtyard lawn', level: 'meso', parent: 'ground-storey', primitive: 'extrude', dims: [2.9, 0.08, 2.18], position: [0.2, 0.38, -0.25], material: 'grass', localFeatures: ['courtyard-grass-blades'] }),
-  component({ id: 'front-steps', name: 'Three rounded entry steps', level: 'meso', parent: 'site-plinth', primitive: 'extrude', dims: [3.2, 0.3, 1.35], position: [1.55, 0.27, 3.86], material: 'paving', localFeatures: ['step-edge-light'] }),
+  component({ id: 'front-steps', name: 'Three rounded entry steps', level: 'meso', parent: 'site-plinth', primitive: 'extrude', dims: [4.8, 0.3, 1.72], position: [0.92, 0.27, 3.62], material: 'paving', localFeatures: ['step-edge-light'] }),
   component({ id: 'front-lawn-island', name: 'Front lawn island with concave entry edge', level: 'meso', parent: 'landscape-assembly', primitive: 'extrude', dims: [6.3, 0.12, 2.75], position: [-1.4, 0.29, 3.25], material: 'grass', localFeatures: ['front-lawn-curb'] }),
   component({ id: 'right-lawn-ribbon', name: 'Right lawn ribbon', level: 'meso', parent: 'landscape-assembly', primitive: 'extrude', dims: [2.1, 0.12, 6.9], position: [4.1, 0.29, 0], material: 'grass', localFeatures: ['right-ribbon-curb'] }),
-  component({ id: 'interior-floor', name: 'Visible lobby interior', level: 'meso', parent: 'ground-storey', dims: [6.8, 1.75, 5.35], position: [-0.35, 1.18, -0.05], material: 'interior', localFeatures: ['interior-tile-grid'] }),
+  component({ id: 'interior-floor', name: 'Visible lobby interior', level: 'macro', dims: [6.8, 1.75, 5.35], position: [-0.35, 1.18, -0.05], material: 'interior', localFeatures: ['interior-tile-grid'] }),
   component({ id: 'reception', name: 'Curved reception island', level: 'meso', parent: 'ground-storey', primitive: 'cylinder', dims: [1.55, 0.58, 0.7], position: [-0.75, 0.78, 1.78], material: 'interior', localFeatures: ['reception-rounded-counter'] }),
   component({ id: 'seating-cluster', name: 'Waiting-room seating cluster', level: 'meso', parent: 'ground-storey', dims: [2.5, 0.75, 1.2], position: [-0.8, 0.65, 2.2], material: 'interior', localFeatures: ['chair-upholstery-contrast'] }),
   component({ id: 'warm-light-rig', name: 'Interior warm illumination', level: 'meso', parent: 'ground-storey', primitive: 'sphere', dims: [3.8, 1.4, 4.5], position: [-0.4, 1.7, 0], material: 'emissive', localFeatures: ['pendant-emissive-bulbs'] }),
@@ -407,7 +404,7 @@ spec.visualEvidence = [];
 
 spec.qualityContract.qualityBar = 'complex';
 spec.qualityContract.definitionOfDone = [
-  'At the reference isometric view, the model reads immediately as the same rounded two-storey medical clinic: square courtyard void, layered white fascia, green roof ribbons, warm modular glazing, front portal, two crosses, and landscaped stepped plinth.',
+  'At the reference isometric view, the model reads immediately as the same rounded single-storey medical clinic: square courtyard void, layered white fascia, green roof ribbons, warm modular glazing, front portal, two crosses, and landscaped stepped plinth.',
   'At two orbit views, roof and courtyard remain genuinely volumetric and no façade collapses into a projection plane.',
   'All named architectural assemblies remain independently clickable and separable by explode mode.',
 ];
@@ -421,13 +418,13 @@ spec.qualityContract.minimumSpecDepth = {
 };
 spec.qualityContract.featureGroups = [
   { id: 'courtyard-ring', name: 'Courtyard and roof negative-space system', required: true, qualityCriteria: ['Square opening remains centered within the rounded roof ring and exposes the lawn below.'], evidenceRefs: ['full-object'], failureModes: ['roof becomes a solid slab', 'courtyard is painted rather than open'] },
-  { id: 'curtain-wall-system', name: 'Warm curtain-wall and mullion system', required: true, qualityCriteria: ['Front, left, upper, and courtyard glazing use repeated dark mullions and reveal warm interior depth.'], evidenceRefs: ['full-object'], failureModes: ['flat amber walls', 'missing bay rhythm'] },
+  { id: 'curtain-wall-system', name: 'Warm curtain-wall and mullion system', required: true, qualityCriteria: ['Front, left, and courtyard glazing use repeated dark mullions and reveal warm interior depth.'], evidenceRefs: ['full-object'], failureModes: ['flat amber walls', 'missing bay rhythm'] },
   { id: 'white-fascia-system', name: 'Rounded white fascia and parapet system', required: true, qualityCriteria: ['All major floor and roof edges carry thick rounded white bands with legible bevel highlights.'], evidenceRefs: ['full-object'], failureModes: ['sharp box edges', 'inconsistent band thickness'] },
   { id: 'landscape-ribbons', name: 'Ground and roof grass ribbon system', required: true, qualityCriteria: ['Clipped green zones follow white curbs around roof, courtyard, front lawn, and right-side ribbon.'], evidenceRefs: ['full-object'], failureModes: ['grass becomes a full rectangular carpet', 'curbs do not follow grass silhouette'] },
   { id: 'medical-entry', name: 'Medical identity and entry system', required: true, qualityCriteria: ['Roof and façade crosses are visible and the rounded glass entry portal aligns with stepped paving.'], evidenceRefs: ['full-object'], failureModes: ['missing cross', 'entrance reads as an ordinary window bay'] },
 ];
 spec.qualityContract.visualDeltaChecks = [
-  'outer rounded-square silhouette and two-storey height ratio',
+  'outer rounded-square silhouette and single-storey height ratio',
   'courtyard aperture size and roof-ring thickness',
   'front portal position relative to long glass façade',
   'curtain-wall bay spacing and dark mullion value',
@@ -452,7 +449,7 @@ spec.qualityTargets = {
 spec.featureReviewTargets = [
   { id: 'courtyard-roof-system', name: 'Open courtyard and nested roof-ring system', tier: 'critical', passIds: ['blockout', 'structural-pass', 'form-refinement'], minimumScore: 0.82, mustPass: true, componentRefs: ['roof-assembly', 'roof-walkway', 'courtyard-parapet', 'courtyard-lawn'], evidenceRefs: ['full-object'] },
   { id: 'rounded-fascia-system', name: 'Rounded white floor and parapet bands', tier: 'critical', passIds: ['blockout', 'form-refinement'], minimumScore: 0.8, mustPass: true, componentRefs: ['outer-floor-slabs', 'outer-parapet', 'entrance-portal'], evidenceRefs: ['full-object'] },
-  { id: 'warm-curtain-wall-system', name: 'Warm transparent façades and mullion rhythm', tier: 'critical', passIds: ['structural-pass', 'material-pass', 'surface-pass'], minimumScore: 0.78, mustPass: true, componentRefs: ['front-curtain-wall', 'left-curtain-wall', 'upper-front-wall', 'courtyard-walls', 'facade-mullions'], evidenceRefs: ['full-object'] },
+  { id: 'warm-curtain-wall-system', name: 'Warm transparent façades and mullion rhythm', tier: 'critical', passIds: ['structural-pass', 'material-pass', 'surface-pass'], minimumScore: 0.78, mustPass: true, componentRefs: ['front-curtain-wall', 'left-curtain-wall', 'courtyard-walls', 'facade-mullions'], evidenceRefs: ['full-object'] },
   { id: 'landscape-ribbon-system', name: 'Ground and roof grass ribbons with white curbs', tier: 'critical', passIds: ['structural-pass', 'material-pass'], minimumScore: 0.78, mustPass: true, componentRefs: ['landscape-assembly', 'roof-grass-band', 'front-lawn-island', 'right-lawn-ribbon'], evidenceRefs: ['full-object'] },
   { id: 'medical-entry-system', name: 'Stepped glass entry and medical crosses', tier: 'critical', passIds: ['form-refinement', 'lighting-pass'], minimumScore: 0.8, mustPass: true, componentRefs: ['entrance-portal', 'entrance-doors', 'medical-crosses', 'front-steps'], evidenceRefs: ['full-object'] },
   { id: 'interior-readability', name: 'Visible warm lobby furniture and pendant lighting', tier: 'important', passIds: ['surface-pass', 'lighting-pass'], minimumScore: 0.66, mustPass: false, componentRefs: ['reception', 'seating-cluster', 'pendant-lights'], evidenceRefs: ['full-object'] },
@@ -463,10 +460,10 @@ spec.lookDevTargets.materialPass.referencePbrExtraction.requiredWhenSourceImageP
 spec.lookDevTargets.materialPass.referencePbrExtraction.acceptedLimitation =
   'The chat attachment was available to agent vision but not as a local image path. Materials are procedural visual estimates, not recovered PBR.';
 spec.lightingFromPhoto = [
-  'Key light: large soft neutral-warm directional light from upper camera-left, intensity 3.2, shadow radius 5.',
-  'Fill light: cool-white hemisphere/environment fill at intensity 1.15 to keep white shell readable.',
-  'Rim light: broad rear-right area light at intensity 1.4 to separate parapets and glass edges.',
-  'Exposure 1.02 with ACES filmic tone mapping; near-white studio background #f4f2ef.',
+  'Key light: large soft neutral-warm directional light from upper camera-left, intensity 2.2, shadow radius 5.',
+  'Fill light: cool-white hemisphere/environment fill at intensity 1.05 to keep white shell readable.',
+  'Rim light: broad rear-right directional light at intensity 1.15 to separate parapets and glass edges.',
+  'Exposure 0.82 with ACES filmic tone mapping; near-white studio background #f4f2ef.',
   'Soft contact shadows under plinth, curbs, steps, furniture, and façade slabs; no ambient-only lighting.',
 ];
 
@@ -478,7 +475,7 @@ for (const pass of spec.buildPasses) {
       if (pass.id === 'form-refinement') return c.material !== 'utility-invisible';
       if (pass.id === 'material-pass' || pass.id === 'surface-pass') return c.material !== 'utility-invisible';
       if (pass.id === 'interaction-pass') return c.level === 'macro' || c.level === 'meso';
-      return ['root', 'roof-assembly', 'ground-storey', 'upper-storey', 'landscape-assembly'].includes(c.id);
+      return ['root', 'roof-assembly', 'ground-storey', 'interior-floor', 'landscape-assembly'].includes(c.id);
     })
     .map((c) => c.id);
 }

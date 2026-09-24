@@ -152,6 +152,22 @@ Useful additions depending on the subject:
 - **A saturated anodized or candy finish** — `The coat is candy-coat, not gem-metal. Keep the hue; do not let the environment steal it.`
 - **A cost ceiling** — `Stay at low effort and skip the presentation composer; I only need the evaluation render.`
 
+### Automated refinement runs
+
+On a self-hosted deployment beside a writable checkout, open a demo, overlay its reference, orbit
+to the review angle, and click **Set capture view**. The **Refinement runs** section can then queue
+an editable number of loops and show current runs for that model.
+
+One loop is one complete `SKILL.md` invocation. The durable worker only locks the user's angle,
+counts finished invocations, and starts the next one; the skill itself performs the gap analysis,
+fix, validation, visual review, and self-correction.
+
+```bash
+npm run workflow:worker
+npm run workflow -- list
+npm run workflow -- status <job-id>
+```
+
 The scripts run from the skill root and need only Python 3.10+ — nothing to install.
 
 ```bash

@@ -101,7 +101,7 @@ export const demos: DemoEntry[] = [
     subjectClass: 'object',
     blurb:
       'A stylized real-time architectural diorama reconstructed procedurally from one isometric ' +
-      'reference. Nested extruded rings preserve the rounded two-storey silhouette and the real ' +
+      'reference. Nested extruded rings preserve the rounded single-storey silhouette and the real ' +
       'open courtyard; separate warm curtain-wall bays, dark mullions, white fascia and parapets, ' +
       'green roof ribbons, stepped entry, illuminated medical crosses, lobby furniture and pendant ' +
       'lights carry the visible identity. Rear elevations, wall thickness and the room plan are ' +
@@ -115,11 +115,11 @@ export const demos: DemoEntry[] = [
     authorUrl: 'https://openai.com/codex/',
     status: 'final',
     cameraPosition: [-15.5, 13.2, 17.5],
-    cameraTarget: [0, 1.95, 0],
+    cameraTarget: [0, 1.45, 0],
     cameraFov: 28,
     accent: '#719414',
     backgroundGradient: { inner: '#fbfaf8', outer: '#e9e7e3' },
-    exposure: 0.92,
+    exposure: 0.82,
     environmentIntensity: 0.82,
     toneMapping: 'aces',
     installLights: (scene) => {
